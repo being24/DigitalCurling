@@ -37,8 +37,8 @@ namespace digital_curling {
 		// Simple server for DigitalCurling
 		int SimpleServer() {
 			// Open config file
-			//const string config_file_path = "config.txt";
-			const string config_file_path = "C:\\Data\\Research\\programs\\DCServer-master\\x64\\Debug\\config.txt";
+			const string config_file_path = "config.txt";
+			//const string config_file_path = "C:\\Data\\Research\\programs\\DCServer-master\\x64\\Debug\\config.txt";
 			std::vector<string> config_params[3];
 			//                               [0][0] : type of rules (0: standard, 1:mix doubles)
 			//                               [0][1] : number of ends (1 - 10)
