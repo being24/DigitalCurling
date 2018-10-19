@@ -122,7 +122,7 @@ namespace digital_curling
 			//using namespace constant_num;
 			const float   GUARD_OFFSET_X = 1.070f;
 			const float   GUARD_OFFSET_Y = 2.286f;
-			const ShotPos CENTER_HOUSE(kCenterX, kTeeY - kHouse4FootR - kStoneR, 0);
+			const ShotPos CENTER_HOUSE(kCenterX, kTeeY - 3 * kStoneR, 0);
 			const ShotPos CENTER_GUARD(kCenterX, kTeeY + kHouseR + GUARD_OFFSET_Y, 0);
 			const ShotPos SIDE_HOUSE(kCenterX - kHouse8FootR, kTeeY + kStoneR, 0);
 			const ShotPos SIDE_GUARD(kCenterX - GUARD_OFFSET_X, kTeeY + kHouseR + GUARD_OFFSET_Y, 0);
