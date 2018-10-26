@@ -38,7 +38,7 @@ DigitalCurling
 ### Commands
 #### `ISREADY`
 #### `READYOK`
-* For confirm an AI is ready.
+* To confirm an AI is ready.
 * AI should return `READYOK` after reciving `ISREADY`.
 #### `NEWGAME name1 name2`
 * Notifies a new game will start.
