@@ -97,13 +97,33 @@ namespace digital_curling
 			return false;
 		}
 
-		//Send 'NEWGAMWE p1->name_ p2->name_' command to both player
+		// Send 'NEWGAMWE p1->name_ p2->name_' command to both player
 		std::stringstream sstream;
 		sstream << "NEWGAME " << player1_->name_ << " " << player2_->name_;
 		player1_->Send(sstream.str().c_str());
-		if (player1_ != player2_) {
-			player2_->Send(sstream.str().c_str());
-		}
+		player2_->Send(sstream.str().c_str());
+
+		// Clear sstream
+		sstream.str("");
+		sstream.clear(std::stringstream::goodbit);
+
+		// Send 'GAMEINFO'
+		sstream << "GAMEINFO " << rule_type_ << " " << sim->random_type_;
+		player1_->Send(sstream.str().c_str());
+		player2_->Send(sstream.str().c_str());
+
+		// Clear sstream
+		sstream.str("");
+		sstream.clear(std::stringstream::goodbit);
+
+		std::stringstream sstream2;
+
+		// Send 'RANDOMSIZE'
+		sstream << "RANDOMSIZE " << player1_->random_x_ << " " << player1_->random_y_ << endl;
+		sstream2 << "RANDOMSIZE " << player2_->random_x_ << " " << player2_->random_y_ << endl;
+
+		player1_->Send(sstream.str().c_str());
+		player2_->Send(sstream2.str().c_str());
 
 		return true;
 	}
