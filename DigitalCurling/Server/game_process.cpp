@@ -14,7 +14,7 @@ using std::endl;
 
 namespace digital_curling
 {
-	GameProcess::GameProcess(Player *p1, Player *p2, int num_ends, float random, int rule_type) : rule_type_(rule_type), log_file_(p1, p2, random) {
+	GameProcess::GameProcess(Player *p1, Player *p2, int num_ends, int rule_type) : rule_type_(rule_type), log_file_(p1, p2) {
 
 		// Initialize state of the game
 		memset(&gs_, 0, sizeof(GameState));
@@ -33,6 +33,28 @@ namespace digital_curling
 
 		// Initialize simulator
 		sim = new b2simulator::Simulator();
+	}
+
+	GameProcess::GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, SimulatorParams params) : rule_type_(rule_type), log_file_(p1, p2) {
+
+		// Initialize state of the game
+		memset(&gs_, 0, sizeof(GameState));
+		gs_.LastEnd = num_ends;  // set LastEnd as number of ends
+
+		// Set random number
+		//random_ = random;
+
+		// Initialize bestshot and runshot
+		memset(&best_shot_, 0, sizeof(ShotVec));
+		memset(&run_shot_, 0, sizeof(ShotVec));
+
+		// Set players
+		player1_ = p1;
+		player2_ = p2;
+
+		// Initialize simulator
+		sim = new b2simulator::Simulator(params.friction);
+		sim->random_type_ = params.random_generator;
 	}
 
 	GameProcess::~GameProcess() {}

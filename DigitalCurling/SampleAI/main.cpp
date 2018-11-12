@@ -290,6 +290,15 @@ bool DoCommand(char *Message)
 			gs.WhiteToMove = false;
 		}
 	}
+	else if (_stricmp(CMD, "PUTSTONE") == 0) {
+		//======================================================
+		// NOTE:
+		//  You should return 'PUTSTONE num' (num = 0, 1, 2, 3)
+		// to place stones for Mix Doubles rule.
+		//======================================================
+
+		Send("PUTSTONE 0");
+	}
 	else if (_stricmp(CMD, "GO") == 0) {
 		//======================================================
 		// NOTE:
@@ -312,7 +321,7 @@ bool DoCommand(char *Message)
 		else {
 			timelimit = INT_MAX;
 		}
-		cout << "timelimit = " << timelimit << endl;
+		cerr << "timelimit = " << timelimit << endl;
 
 
 		// Calclate shot vector to return

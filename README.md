@@ -38,6 +38,28 @@ you should add `Simulator.lib` (after build _Simulator_) to additional dependenc
 * DCP provides command for communication between the server and Curling AIs.
 * Each message contains a command and arguments such as `COMMAND arg1 arg2...`.
 
+~~~
+Server                          CurlingAI
+   | ---------- ISREADY ----------> |
+   | <--------- READYOK ----------- |
+   |                                |
+   | ---------- NEWGAME ----------> |
+   | ---------- GAMEINFO   -------> |
+   | ---------- RANDOMSIZE -------> |
+   |                                |
+   | ---------- PUTSTONE ---------> | + Only for Mix Doubles rule
+   | <--------- PUTSTONE ---------- | | Repeats while a match continues
+   |                                | |
+   | ---------- SETSTATE ---------> | | +
+   | ---------- POSITION ---------> | | | Repeats while an end continues
+   | ---------- GO ---------------> | | |
+   | <--------- BESTSHOT ---------- | + + or `CONCEDE` to give up
+   |                                |
+   | ---------- SCORE ------------> | + After an end
+   |                                |
+   | ---------- GAMEOVER ---------> | + After a game
+~~~
+
 ### Commands
 #### `ISREADY`
 #### `READYOK`
@@ -84,28 +106,6 @@ you should add `Simulator.lib` (after build _Simulator_) to additional dependenc
 #### `GAMEOVER win`
 * Notifies the  match finished.
 * `win` : `WIN` or `LOSE` or `DRAW`
-
-~~~
-Server                          CurlingAI
-   | ---------- ISREADY ----------> |
-   | <--------- READYOK ----------- |
-   |                                |
-   | ---------- NEWGAME ----------> |
-   | ---------- GAMEINFO   -------> |
-   | ---------- RANDOMSIZE -------> |
-   |                                |
-   | ---------- PUTSTONE ---------> | + Only for Mix Doubles rule
-   | <--------- PUTSTONE ---------- | | Repeats while a match continues
-   |                                | |
-   | ---------- SETSTATE ---------> | | +
-   | ---------- POSITION ---------> | | | Repeats while an end continues
-   | ---------- GO ---------------> | | |
-   | <--------- BESTSHOT ---------- | + + or `CONCEDE` to give up
-   |                                |
-   | ---------- SCORE ------------> | + After an end
-   |                                |
-   | ---------- GAMEOVER ---------> | + After a game
-~~~
 
 ---
 

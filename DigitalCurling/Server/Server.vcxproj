@@ -130,6 +130,7 @@
     <ClInclude Include="game_log.h" />
     <ClInclude Include="game_player.h" />
     <ClInclude Include="game_process.h" />
+    <ClInclude Include="lib\picojson.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt" />

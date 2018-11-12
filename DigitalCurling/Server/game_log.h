@@ -8,7 +8,7 @@ namespace digital_curling {
 	// TODO: try not to use WritePrivateProffile()
 	class GameLog {
 	public:
-		GameLog(const Player* const p1, const Player* const p2, float random);
+		GameLog(const Player* const p1, const Player* const p2);
 		~GameLog();
 
 		// Write to logfile

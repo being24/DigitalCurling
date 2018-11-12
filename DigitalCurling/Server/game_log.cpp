@@ -11,7 +11,7 @@ using std::endl;
 namespace digital_curling {
 
 	// Create file and write 'GameInfo' statement
-	GameLog::GameLog(const Player* const p1, const Player* const p2, float random) {
+	GameLog::GameLog(const Player* const p1, const Player* const p2) {
 		if (p1 == nullptr || p2 == nullptr) {
 			return;
 		}
@@ -37,9 +37,12 @@ namespace digital_curling {
 		ofs << "[GameInfo]" << endl;
 		ofs << "First=" << p1->name_ << endl;
 		ofs << "FirstRemTime=" << p1->time_limit_ << endl;
+		ofs << "FirstRandom_1=" << p1->random_x_ << endl;
+		ofs << "FirstRandom_2=" << p1->random_y_ << endl;
 		ofs << "Second=" << p2->name_ << endl;
 		ofs << "SecondRemTime=" << p2->time_limit_ << endl;
-		ofs << "Random=" << random << endl;
+		ofs << "SecondRandom_1=" << p2->random_x_ << endl;
+		ofs << "SecondRandom_2=" << p2->random_y_ << endl;
 	}
 
 	GameLog::~GameLog() {}

@@ -11,10 +11,17 @@
 
 namespace digital_curling
 {
+	// Options for simulator
+	struct SimulatorParams {
+		float friction;
+		int random_generator;
+	};
+
 	// DigitalCrling game
 	class GameProcess {
 	public:
-		GameProcess(Player *p1, Player *p2, int num_ends, float random, int rule_type);
+		GameProcess(Player *p1, Player *p2, int num_ends, int rule_type);
+		GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, SimulatorParams params);
 		~GameProcess();
 
 		enum {
@@ -53,7 +60,7 @@ namespace digital_curling
 		b2simulator::Simulator *sim;  // Simulator
 
 		GameState gs_;         // State of the game
-		float     random_;     // Size of random number
+		//float     random_;     // Size of random number
 
 		ShotVec best_shot_;    // Shot vector recieved
 		ShotVec run_shot_;     // Shot vector (add random)
