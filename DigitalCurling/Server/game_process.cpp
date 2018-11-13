@@ -176,15 +176,16 @@ namespace digital_curling
 
 			// Prepare recieve thread
 			std::string str;
-			std::future<void> f = std::async(std::launch::async, RecvThread2, std::ref(str), player);
+			//std::future<void> f = std::async(std::launch::async, RecvThread2, std::ref(str), player);
 
 			// Send "PUTSTONE" command
 			player->Send("PUTSTONE");
 
 			// Wait for message is ready
-			std::future_status result = f.wait_for(std::chrono::milliseconds(time_out));
+			//std::future_status result = f.wait_for(std::chrono::milliseconds(time_out));
 
 			int putstone_type = 0;
+			/*
 			std::vector<std::string> tokens;
 			if (result != std::future_status::timeout) {
 				strcpy_s(msg, Player::kBufferSize, str.c_str());
@@ -202,33 +203,34 @@ namespace digital_curling
 			else {
 				cerr << "time out for 'PUTSTONE'" << endl;
 			}
+			*/
 
 			switch (putstone_type)
 			{
 			case 0:
-				gs_.body[0][0] = CENTER_GUARD.x;
-				gs_.body[0][1] = CENTER_GUARD.y;
-				gs_.body[1][0] = CENTER_HOUSE.x;
-				gs_.body[1][1] = CENTER_HOUSE.y;
-				break;
-			case 1:
-				gs_.body[1][0] = CENTER_GUARD.x;
-				gs_.body[1][1] = CENTER_GUARD.y;
 				gs_.body[0][0] = CENTER_HOUSE.x;
 				gs_.body[0][1] = CENTER_HOUSE.y;
+				gs_.body[1][0] = CENTER_GUARD.x;
+				gs_.body[1][1] = CENTER_GUARD.y;
+				break;
+			case 1:
+				gs_.body[0][0] = CENTER_HOUSE.x;
+				gs_.body[0][1] = CENTER_HOUSE.y;
+				gs_.body[1][0] = CENTER_GUARD.x;
+				gs_.body[1][1] = CENTER_GUARD.y;
 				gs_.WhiteToMove ^= 1;
 				break;
 			case 2:
-				gs_.body[0][0] = SIDE_GUARD.x;
-				gs_.body[0][1] = SIDE_GUARD.y;
-				gs_.body[1][0] = SIDE_HOUSE.x;
-				gs_.body[1][1] = SIDE_HOUSE.y;
-				break;
-			case 3:
-				gs_.body[1][0] = SIDE_GUARD.x;
-				gs_.body[1][1] = SIDE_GUARD.y;
 				gs_.body[0][0] = SIDE_HOUSE.x;
 				gs_.body[0][1] = SIDE_HOUSE.y;
+				gs_.body[1][0] = SIDE_GUARD.x;
+				gs_.body[1][1] = SIDE_GUARD.y;
+				break;
+			case 3:
+				gs_.body[0][0] = SIDE_HOUSE.x;
+				gs_.body[0][1] = SIDE_HOUSE.y;
+				gs_.body[1][0] = SIDE_GUARD.x;
+				gs_.body[1][1] = SIDE_GUARD.y;
 				gs_.WhiteToMove ^= 1;
 				break;
 			default:
