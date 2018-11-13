@@ -158,6 +158,7 @@ namespace digital_curling {
 			*/
 
 			// Open config file w/ json
+			//std::ifstream config_file("C:\\Users\\vista\\Source\\Repos\\digitalcurling\\DigitalCurling\\DigitalCurling\\x64\\Debug\\config.json");
 			std::ifstream config_file("config.json");
 			if (!config_file.is_open()) {
 				cerr << "failed to open config.json" << endl;
@@ -179,7 +180,7 @@ namespace digital_curling {
 			picojson::object obj_sim = val.get<picojson::object>()["simulator"].get<picojson::object>();
 
 			// Initialize LocalPlayer 1
-			digital_curling::Player *p1;
+			digital_curling::LocalPlayer *p1;
 			p1 = new LocalPlayer(
 				obj_p1["path"].get<string>(), 
 				(int)obj_p1["timelimit"].get<double>(),
@@ -191,7 +192,7 @@ namespace digital_curling {
 			}
 
 			// Initialize LocalPlayer 2 
-			digital_curling::Player *p2;
+			digital_curling::LocalPlayer *p2;
 			p2 = new LocalPlayer(
 				obj_p2["path"].get<string>(),
 				(int)obj_p2["timelimit"].get<double>(),
@@ -210,7 +211,7 @@ namespace digital_curling {
 			//bool output_server_log = obj_server["output_server_log"].get<bool>();
 			SimulatorParams sim_params;
 			sim_params.friction = (float)obj_sim["friction"].get<double>();
-			sim_params.random_generator = (obj_sim["friction"].get<string>() == "RECTANGULAR") ? b2simulator::RECTANGULAR : b2simulator::POLAR;
+			sim_params.random_generator = (obj_sim["rand_type"].get<string>() == "RECTANGULAR") ? b2simulator::RECTANGULAR : b2simulator::POLAR;
 
 			// Create GameProcess
 			int rule_type;
@@ -264,7 +265,8 @@ namespace digital_curling {
 						goto EXIT_PROCESS;
 					}
 					cerr << "BESTSHOT: (" << 
-						game_process.best_shot_.x << ", " << game_process.best_shot_.y << ", " << game_process.best_shot_.angle << ")" << endl;
+						game_process.best_shot_.x << ", " << game_process.best_shot_.y << ", " << 
+						game_process.best_shot_.angle << ")" << endl;
 
 					// Simulation
 					game_process.RunSimulation();
@@ -275,7 +277,7 @@ namespace digital_curling {
 				PrintScoreBoard(&game_process);
 				//Sleep(100);  // MAGIC NUMBER: wait for SendScore;
 
-				
+
 			}
 
 		EXIT_PROCESS:
