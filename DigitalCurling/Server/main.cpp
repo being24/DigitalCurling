@@ -91,74 +91,8 @@ namespace digital_curling {
 
 		// Simple server for DigitalCurling
 		int SimpleServer() {
-			// Open config file
-			/*
-			const string config_file_path = "config.txt";
-			//const string config_file_path = "C:\\Data\\Research\\programs\\DCServer-master\\x64\\Debug\\config.txt";
-			std::vector<string> config_params[3];
-			//                               [0][0] : type of rules (0: standard, 1:mix doubles)
-			//                               [0][1] : number of ends (1 - 10)
-			//                               [0][2] : size of random X (default 0.145)
-			//                               [0][3] : size of random Y (default 0.145)
-			//                               [1][0] : type of player1 (0: Local AI, 1: Network AI)
-			//                               [1][1] : path of .exe file of player1
-			//                               [1][2] : timelimit of player1 (msec, 0:infinite)
-			//                               [1][3] : size of random X (default 0.145)
-			//                               [1][4] : size of random Y (default 0.145)
-			//                               [2][0] : type of player1 (0: Local AI, 1: Network AI)
-			//                               [2][1] : path of .exe file of player1
-			//                               [2][2] : timelimit
-			//                               [2][3] : size of random X (default 0.145)
-			//                               [2][4] : size of random Y (default 0.145)
-			std::ifstream config_file(config_file_path);
-			if (!config_file.is_open()) {
-				cerr << "failed to open " << config_file_path << endl;
-				return 0;
-			}
-			// Read config file
-			string str_in;
-			int i = 0;
-			while (std::getline(config_file, str_in)) {  // read a line from config_file
-				std::stringstream sstring(str_in);
-				string param;
-				while (std::getline(sstring, param, ',')) {  // sprit as token by delimiter ','
-															 //cerr << "param[" << i << "][" << config_params[i].size() << "] = " << param << endl;
-					config_params[i].push_back(param);
-				}
-				i++;
-			}
-
-			// Initialise LocalPlayer 1
-			digital_curling::Player *p1;
-			p1 = SetPlayer(config_params[1]);
-			if (p1->InitProcess() == 0) {
-				cerr << "failed to create process for player 1" << endl;
-				return 0;
-			}
-	
-			digital_curling::Player *p2;
-			p2 = SetPlayer(config_params[2]);
-			if (p2->InitProcess() == 0) {
-				cerr << "failed to create process for player 2" << endl;
-				return 0;
-			}
-
-			Sleep(10);  // MAGIC NUMBER: wait for process created
-
-			cerr << "creating game process..." << endl;
-
-			// Create GameProcess
-			digital_curling::GameProcess game_process(
-				p1,
-				p2,
-				atoi(config_params[0][1].c_str()),
-				(float)atof(config_params[0][2].c_str()),
-				atoi(config_params[0][0].c_str())
-			);
-			*/
 
 			// Open config file w/ json
-			//std::ifstream config_file("C:\\Users\\vista\\Source\\Repos\\digitalcurling\\DigitalCurling\\DigitalCurling\\x64\\Debug\\config.json");
 			std::ifstream config_file("config.json");
 			if (!config_file.is_open()) {
 				cerr << "failed to open config.json" << endl;
