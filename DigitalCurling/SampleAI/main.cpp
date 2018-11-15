@@ -21,6 +21,9 @@ constexpr unsigned int kBufferSize = 1024;  // Buffer size
 digital_curling::GameState gs;
 digital_curling::b2simulator::Simulator *sim = nullptr;
 
+unsigned int power_play_count = 0;
+bool move_info = true;
+int score_diff = 0;
 
 void Send(const char* const Message);
 void Recv(char* Message, size_t Size);
@@ -176,6 +179,8 @@ namespace digital_curling{
 					else {
 						pos.angle = 1;
 					}
+
+					//std::cerr << "CreateHitShot " << pos.x << " " << pos.y << " " << pos.angle << std::endl;
 					sim->CreateHitShot(pos, 16, &vec);
 					return vec;
 				}
@@ -296,8 +301,14 @@ bool DoCommand(char *Message)
 		//  You should return 'PUTSTONE num' (num = 0, 1, 2, 3)
 		// to place stones for Mix Doubles rule.
 		//======================================================
-
-		Send("PUTSTONE 0");
+		if (power_play_count == 0 && score_diff < 0) {
+			power_play_count++;
+			Send("PUTSTONE 2");
+			cerr << "PUTSTONE 2" << endl;
+		}
+		else {
+			Send("PUTSTONE 0");
+		}
 	}
 	else if (_stricmp(CMD, "GO") == 0) {
 		//======================================================
@@ -309,6 +320,7 @@ bool DoCommand(char *Message)
 		// You can get timelimit
 		unsigned int timelimit;
 		int num;
+		move_info = gs.WhiteToMove;
 		if (gs.WhiteToMove) {
 			num = 2;
 		}
@@ -331,6 +343,17 @@ bool DoCommand(char *Message)
 		sprintf_s(Buffer, sizeof(Buffer), "BESTSHOT %f %f %d", vec.x, vec.y, vec.angle);
 		cout << Buffer <<  endl;
 		Send(Buffer);
+	}
+	else if (_stricmp(CMD, "SCORE") == 0) {
+		if (GetArgument(Buffer, sizeof(Buffer), Message, 1) == FALSE) {
+			return false;
+		}
+		if (move_info) {
+			score_diff -= atoi(Buffer);
+		}
+		else {
+			score_diff += atoi(Buffer);
+		}
 	}
 
 	return true;

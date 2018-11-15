@@ -310,6 +310,7 @@ namespace digital_curling {
 
 			vec_ret.x = vec.x * cos(deg) - vec.y * sin(deg);
 			vec_ret.y = vec.x * sin(deg) + vec.y * cos(deg);
+			vec_ret.angle = vec.angle;
 
 			return vec_ret;
 		}
