@@ -176,16 +176,17 @@ namespace digital_curling
 
 			// Prepare recieve thread
 			std::string str;
-			std::future<void> f = std::async(std::launch::async, RecvThread2, std::ref(str), player);
+			//std::future<void> f = std::async(std::launch::async, RecvThread2, std::ref(str), player);
 
 			// Send "PUTSTONE" command
 			player->Send("PUTSTONE");
 
 			// Wait for message is ready
-			std::future_status result = f.wait_for(std::chrono::milliseconds(time_out));
+			//std::future_status result = f.wait_for(std::chrono::milliseconds(time_out));
 
 			int putstone_type = 0;
 			std::vector<std::string> tokens;
+			/*
 			if (result != std::future_status::timeout) {
 				strcpy_s(msg, Player::kBufferSize, str.c_str());
 				// set putstone_type
@@ -201,7 +202,7 @@ namespace digital_curling
 			}
 			else {
 				cerr << "time out for 'PUTSTONE'" << endl;
-			}
+			}*/
 
 			switch (putstone_type)
 			{
