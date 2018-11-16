@@ -37,7 +37,7 @@ namespace digital_curling
 
 		// set random numbers
 		random_x_ = random_x;
-		random_y = random_y;
+		random_y_ = random_y;
 	}
 
 	LocalPlayer::~LocalPlayer() {}
