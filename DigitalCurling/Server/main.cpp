@@ -209,7 +209,7 @@ namespace digital_curling {
 				// Send 'SCORE' to players
 				game_process.SendScore();
 				PrintScoreBoard(&game_process);
-				//Sleep(100);  // MAGIC NUMBER: wait for SendScore;
+				Sleep(100);  // wait for SendScore;
 
 
 			}

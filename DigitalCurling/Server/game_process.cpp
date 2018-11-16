@@ -297,9 +297,9 @@ namespace digital_curling
 			sstream << " " <<  gs_.body[i][0] << " " << gs_.body[i][1];
 		}
 		player1_->Send(sstream.str().c_str());
-		if (player1_ != player2_) {
-			player2_->Send(sstream.str().c_str());
-		}
+		Sleep(100);  // wait for;
+		player2_->Send(sstream.str().c_str());
+		Sleep(100);  // wait for;
 		// Write to logfile
 		log_file_.Write("POSITION=" + sstream.str());
 
@@ -310,9 +310,9 @@ namespace digital_curling
 		// Send SETSTATE command ('SETSTATE ShotNum CurEnd LastEnd WhiteToMove')
 		sstream << "SETSTATE " << gs_.ShotNum << " " << gs_.CurEnd << " " << gs_.LastEnd << " " << gs_.WhiteToMove;
 		player1_->Send(sstream.str().c_str());
-		if (player1_ != player2_) {
-			player2_->Send(sstream.str().c_str());
-		}
+		Sleep(100);  // wait for;
+		player2_->Send(sstream.str().c_str());
+		Sleep(100);  // wait for;
 		// Write to logfile
 		log_file_.Write("SETSTATE=" + sstream.str());
 
@@ -346,6 +346,8 @@ namespace digital_curling
 		time_t time_start = clock();
 		next_player->Send(sstream.str().c_str());
 
+		Sleep(100);  // wait for;
+
 		// Wait for message is ready
 		std::future_status result = f.wait_for(std::chrono::milliseconds(next_player->time_remain_));
 		th.join();
@@ -355,7 +357,7 @@ namespace digital_curling
 
 			// Check timelimit
 			if (next_player->time_remain_ < Player::kTimeLimitInfinite) {
-				time_t time_used = clock() - time_start;
+				time_t time_used = clock() - time_start + 100;
 				next_player->time_remain_ -= (int)time_used;
 			}
 
