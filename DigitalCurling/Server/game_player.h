@@ -29,6 +29,7 @@ namespace digital_curling
 		float random_x_;    // random number x
 		float random_y_;    // random number y
 		
+		bool mix_doubles;
 	};
 
 	// Player running on local

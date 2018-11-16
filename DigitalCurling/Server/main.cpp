@@ -37,6 +37,7 @@ namespace digital_curling {
 			return player;
 		}
 
+		// Print score board on console
 		void PrintScoreBoard(const GameProcess* const gp) {
 			// Print for first player
 			int s1 = 0;
@@ -55,7 +56,7 @@ namespace digital_curling {
 					cout << " -";
 				}
 			}
-			cout << " | " << std::setw(2) << s1 << " | " << gp->player1_->name_ << endl;
+			cout << " | " << std::setw(2) << s1 << " | " << gp->player1_->name_ << " ÅZ" << endl;
 
 			// Print for second player
 			int s2 = 0;
@@ -74,7 +75,62 @@ namespace digital_curling {
 					cout << " -";
 				}
 			}
-			cout << " | " << std::setw(2) << s2 << " | " << gp->player2_->name_ << endl;
+			cout << " | " << std::setw(2) << s2 << " | " << gp->player2_->name_ << " Å~" << endl;
+		}
+
+
+		// Improvised board viewer on console
+		void PrintBoard(const GameState* const gs) {
+			const int X_SIZE = 17;
+			const int Y_SIZE = 39;
+			string s[X_SIZE][Y_SIZE];
+
+			// init char table
+			for (int y = 0; y < Y_SIZE; y++) {
+				for (int x = 0; x < X_SIZE; x++) {
+					if (y == 16 && x == 8) {
+						s[x][y] = "ÅE";
+					}
+					else if (y == 16) {
+						s[x][y] = "Å\";
+					}
+					else if (x == 8) {
+						s[x][y] = "Åb";
+					}
+					else {
+						if ((pow((x - 8) * 0.29, 2) + pow((y - 16) * 0.29, 2)) < pow(1.83, 2)) {
+							s[x][y] = "ÅE";
+						}
+						else {
+							s[x][y] = "Å@";
+						}
+					}
+				}
+			}
+
+			for (int i = 0; i < 16; i++) {
+				if (!(gs->body[i][0] == 0.0f && gs->body[i][0] == 0.0f)) {
+					if ((gs->ShotNum - 1) == i) {
+						s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "Åú" : "Å¶";
+					}
+					else {
+						s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "ÅZ" : "Å~";
+						
+					}
+				}
+			}
+
+			// print table
+			std::stringstream strstr;
+			for (int y = 0; y < Y_SIZE; y++) {
+				for (int x = 0; x < X_SIZE; x++) {
+					strstr << s[x][y];
+				}
+
+				strstr << endl;
+			}
+
+			cout << strstr.str();
 		}
 
 		void PrintState(const GameProcess* const gp) {
@@ -124,6 +180,8 @@ namespace digital_curling {
 				cerr << "failed to create process for player 1" << endl;
 				return 0;
 			}
+			p1->mix_doubles = obj_p1["md"].get<bool>();
+			cerr << "p1->md = " << p1->mix_doubles << endl;
 
 			// Initialize LocalPlayer 2 
 			digital_curling::LocalPlayer *p2;
@@ -136,6 +194,8 @@ namespace digital_curling {
 				cerr << "failed to create process for player 2" << endl;
 				return 0;
 			}
+			p2->mix_doubles = obj_p2["md"].get<bool>();
+			cerr << "p2->md = " << p2->mix_doubles << endl;
 
 			// Get other parameters from json
 			int timeout_isready = (int)obj_server["timeout_isready"].get<double>();
@@ -191,7 +251,13 @@ namespace digital_curling {
 				while (game_process.gs_.ShotNum < 16) {
 					// Send "SETSTATE" and "POSITION" to players
 					game_process.SendState();
+					Sleep(50);  // wait for
+					cerr << "==========================================" << endl;
 					PrintState(&game_process);
+					PrintBoard(&game_process.gs_);
+					PrintScoreBoard(&game_process);
+					cerr << "==========================================" << endl;
+					Sleep(50);  // wait for
 
 					// Send "GO" to player
 					status = game_process.Go();
@@ -208,8 +274,11 @@ namespace digital_curling {
 
 				// Send 'SCORE' to players
 				game_process.SendScore();
+				Sleep(50);  // wait for
+				cerr << "==========================================" << endl;
 				PrintScoreBoard(&game_process);
-				Sleep(100);  // wait for SendScore;
+				cerr << "==========================================" << endl;
+				Sleep(50);  // wait for
 
 
 			}
@@ -227,6 +296,10 @@ namespace digital_curling {
 
 int main(void)
 {
+	//digital_curling::GameState gs;
+	//gs.Set(0, 2.375, 4.88);
+	//digital_curling::server::PrintBoard(&gs);
+
 	// run single game
 	digital_curling::server::SimpleServer();
 

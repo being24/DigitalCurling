@@ -181,32 +181,35 @@ namespace digital_curling
 			char msg[Player::kBufferSize];
 
 			// Prepare recieve thread
-			std::string str;
-			std::future<void> f = std::async(std::launch::async, RecvThread2, std::ref(str), player);
-
-			// Send "PUTSTONE" command
-			player->Send("PUTSTONE");
-
-			// Wait for message is ready
-			std::future_status result = f.wait_for(std::chrono::milliseconds(time_out));
-
 			int putstone_type = 0;
-			std::vector<std::string> tokens;
-			if (result != std::future_status::timeout) {
-				strcpy_s(msg, Player::kBufferSize, str.c_str());
-				// set putstone_type
-				tokens = digital_curling::SpritAsTokens(msg, " ");
-				if (tokens.size() == 0) {
-					cerr << "Error: too few aguments in message: '" << msg << "'" << endl;
-				}
-				if (tokens[0] == "PUTSTONE") {
-					if (tokens.size() >= 2) {
-						putstone_type = atoi(tokens[1].c_str());
+			if (player->mix_doubles) {
+				std::string str;
+				std::future<void> f = std::async(std::launch::async, RecvThread2, std::ref(str), player);
+				Sleep(100);
+
+				// Send "PUTSTONE" command
+				player->Send("PUTSTONE");
+
+				// Wait for message is ready
+				std::future_status result = f.wait_for(std::chrono::milliseconds(time_out));
+
+				std::vector<std::string> tokens;
+				if (result != std::future_status::timeout) {
+					strcpy_s(msg, Player::kBufferSize, str.c_str());
+					// set putstone_type
+					tokens = digital_curling::SpritAsTokens(msg, " ");
+					if (tokens.size() == 0) {
+						cerr << "Error: too few aguments in message: '" << msg << "'" << endl;
+					}
+					if (tokens[0] == "PUTSTONE") {
+						if (tokens.size() >= 2) {
+							putstone_type = atoi(tokens[1].c_str());
+						}
 					}
 				}
-			}
-			else {
-				cerr << "time out for 'PUTSTONE'" << endl;
+				else {
+					cerr << "time out for 'PUTSTONE'" << endl;
+				}
 			}
 
 			switch (putstone_type)
