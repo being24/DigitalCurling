@@ -301,7 +301,7 @@ bool DoCommand(char *Message)
 		//  You should return 'PUTSTONE num' (num = 0, 1, 2, 3)
 		// to place stones for Mix Doubles rule.
 		//======================================================
-		if (power_play_count == 0 && score_diff < 0) {
+		if (power_play_count == 0 && score_diff < -3) {
 			power_play_count++;
 			Send("PUTSTONE 2");
 			cerr << "PUTSTONE 2" << endl;

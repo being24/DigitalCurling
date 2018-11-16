@@ -139,6 +139,7 @@ namespace digital_curling
 		sstream << "GAMEINFO " << rule_type_ << " " << sim->random_type_;
 		player1_->Send(sstream.str().c_str());
 		player2_->Send(sstream.str().c_str());
+		log_file_.Write("GAMEINFO=" + sstream.str());
 
 		// Clear sstream
 		sstream.str("");
@@ -152,6 +153,7 @@ namespace digital_curling
 
 		player1_->Send(sstream.str().c_str());
 		player2_->Send(sstream2.str().c_str());
+
 
 		return true;
 	}
@@ -352,7 +354,7 @@ namespace digital_curling
 		Sleep(100);  // wait for;
 
 		// Wait for message is ready
-		std::future_status result = f.wait_for(std::chrono::milliseconds(next_player->time_remain_));
+		std::future_status result = f.wait_for(std::chrono::milliseconds(next_player->time_remain_ + 100));
 		th.join();
 
 		if (result != std::future_status::timeout) {
@@ -360,7 +362,7 @@ namespace digital_curling
 
 			// Check timelimit
 			if (next_player->time_remain_ < Player::kTimeLimitInfinite) {
-				time_t time_used = clock() - time_start + 100;
+				time_t time_used = clock() - time_start - 100;
 				next_player->time_remain_ -= (int)time_used;
 			}
 

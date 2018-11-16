@@ -110,14 +110,24 @@ namespace digital_curling {
 
 			for (int i = 0; i < 16; i++) {
 				if (!(gs->body[i][0] == 0.0f && gs->body[i][0] == 0.0f)) {
-					if ((gs->ShotNum - 1) == i) {
-						s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "Åú" : "Å¶";
+					if (gs->WhiteToMove == (gs->ShotNum % 2)) {
+						if ((gs->ShotNum - 1) == i) {
+							s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "Å¶" : "Åú";
+						}
+						else {
+							s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "Å~" : "ÅZ";
+						}
 					}
 					else {
-						s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "ÅZ" : "Å~";
-						
+						if ((gs->ShotNum - 1) == i) {
+							s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "Åú" : "Å¶";
+						}
+						else {
+							s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "ÅZ" : "Å~";
+						}
 					}
 				}
+
 			}
 
 			// print table
@@ -138,10 +148,10 @@ namespace digital_curling {
 				", End:" << std::setw(2) << gp->gs_.CurEnd + 1 << "/" << std::setw(2) << gp->gs_.LastEnd << ", Next shot: ";
 
 			if (gp->gs_.WhiteToMove) {
-				cout << gp->player2_->name_ << endl;
+				cout << gp->player2_->name_ << " ( " << gp->player2_->time_remain_ / 1000 << " [sec] left)" << endl;
 			}
 			else {
-				cout << gp->player1_->name_ << endl;
+				cout << gp->player1_->name_ << " ( " << gp->player1_->time_remain_ / 1000 << " [sec] left)" << endl;
 			}
 		}
 
@@ -276,6 +286,7 @@ namespace digital_curling {
 				game_process.SendScore();
 				Sleep(50);  // wait for
 				cerr << "==========================================" << endl;
+				PrintBoard(&game_process.gs_);
 				PrintScoreBoard(&game_process);
 				cerr << "==========================================" << endl;
 				Sleep(50);  // wait for
