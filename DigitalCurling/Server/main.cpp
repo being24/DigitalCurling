@@ -96,7 +96,7 @@ namespace digital_curling {
 					else {
 						s[x][y] = "Å@";  // out of house
 					}
-					
+
 					if (y == Y_CENTER) {
 						s[x][y] = "Å\";  // hog line
 					}
@@ -142,7 +142,7 @@ namespace digital_curling {
 		}
 
 		void PrintState(const GameProcess* const gp) {
-			cout << "Shot:" << std::setw(2) << gp->gs_.ShotNum + 1 << 
+			cout << "Shot:" << std::setw(2) << gp->gs_.ShotNum + 1 <<
 				", End:" << std::setw(2) << gp->gs_.CurEnd + 1 << "/" << std::setw(2) << gp->gs_.LastEnd << ", Next shot: ";
 
 			if (gp->gs_.WhiteToMove) {
@@ -154,7 +154,7 @@ namespace digital_curling {
 		}
 
 		// Simple server for DigitalCurling
-		int SimpleServer() {
+		int SimpleServer(std::string match_name) {
 
 			// Open config file w/ json
 			std::string config_path = "config.json";
@@ -172,7 +172,11 @@ namespace digital_curling {
 			// Get ofjects
 			picojson::object obj_server = val.get<picojson::object>()["server"].get<picojson::object>();
 			picojson::object obj_sim = val.get<picojson::object>()["simulator"].get<picojson::object>();
-			picojson::object obj_match = val.get<picojson::object>()["match_default"].get<picojson::object>();
+			if (!val.get<picojson::object>()[match_name].is<picojson::object>()) {
+				cerr << "failed to find match '" << match_name << "' in " << config_path << "." << endl;
+				return 0;
+			}
+			picojson::object obj_match = val.get<picojson::object>()[match_name].get<picojson::object>();
 			picojson::object obj_p1 = obj_match["player_1"].get<picojson::object>();
 			picojson::array params_p1 = obj_match["player_1"].get<picojson::object>()["params"].get<picojson::array>();
 			picojson::object obj_p2 = obj_match["player_2"].get<picojson::object>();
@@ -297,13 +301,76 @@ namespace digital_curling {
 
 			return 1;
 		}
+	
+		int CuiServer() {
+			std::stringstream ss_help;
+			ss_help << "> === DigitalCurling Server 2018 ===========" << endl;
+			ss_help << "> Commands:" << endl;
+			ss_help << ">  'run' : run single match." << endl;
+			ss_help << ">  'run MATCH_NAME' : run single match named MATCH_NAME (default 'match_default')" << endl;
+			ss_help << ">  'q' or 'exit' : exit from server." << endl;
+			ss_help << ">  'h' or 'help' : show all commands." << endl;
+			ss_help << "> ==========================================" << endl;
+
+			cout << ss_help.str();
+
+			string s;
+			// get inputs
+			while (getline (std::cin, s)) {
+
+				// Get tokens from input
+				std::stringstream sstring(s);
+				std::vector<std::string> tokens;
+				std::string tok;
+				while (getline(sstring, tok, ' ')) {
+					if (!tok.empty()) {
+						tokens.push_back(tok);
+					}
+				}
+
+				if (tokens.size() == 0) {
+					continue;
+				}
+
+				// process command
+				if (tokens[0] == "q" || tokens[0] == "exit") {
+					// Break if 'q' or 'exit'
+					cout << "> exit." << endl;
+					break;
+				}
+				else if (tokens[0] == "run") {
+					std::string match_name;
+					// Run single match
+					if (tokens.size() == 1) {
+						match_name = "match_default";
+					}
+					else {
+						match_name = tokens[1];
+					}
+					cout << "> run single match '" << match_name << "'." << endl;
+					SimpleServer(match_name);
+				}
+				else if (tokens[0] == "help" || tokens[0] == "h") {
+ 					// Show help
+					cout << ss_help.str();
+				}
+				else {
+					cerr << "> invalid command." << endl;
+				}
+			}
+
+			return 1;
+		}
 	}
 }
 
 int main(void)
 {
 	// run single game
-	digital_curling::server::SimpleServer();
+	//digital_curling::server::SimpleServer();
+
+	// run cui server
+	digital_curling::server::CuiServer();
 
 	return 0;
 }
