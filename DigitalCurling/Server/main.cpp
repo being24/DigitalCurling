@@ -78,39 +78,37 @@ namespace digital_curling {
 			cout << " | " << std::setw(2) << s2 << " | " << gp->player2_->name_ << " ×" << endl;
 		}
 
-
 		// Improvised board viewer on console
 		void PrintBoard(const GameState* const gs) {
+			const float discrete_size = kStoneR * 2;
 			const int X_SIZE = 17;
 			const int Y_SIZE = 39;
+			const int X_CENTER = 8;
+			const int Y_CENTER = 16;
 			string s[X_SIZE][Y_SIZE];
 
 			// init char table
 			for (int y = 0; y < Y_SIZE; y++) {
 				for (int x = 0; x < X_SIZE; x++) {
-					if (y == 16 && x == 8) {
-						s[x][y] = "・";
-					}
-					else if (y == 16) {
-						s[x][y] = "―";
-					}
-					else if (x == 8) {
-						s[x][y] = "｜";
+					if ((pow((x - X_CENTER) * discrete_size, 2) + pow((y - Y_CENTER) * discrete_size, 2)) < pow(kHouseR, 2)) {
+						s[x][y] = "・";  // in house
 					}
 					else {
-						if ((pow((x - 8) * 0.29, 2) + pow((y - 16) * 0.29, 2)) < pow(1.83, 2)) {
-							s[x][y] = "・";
-						}
-						else {
-							s[x][y] = "　";
-						}
+						s[x][y] = "　";  // out of house
+					}
+					
+					if (y == Y_CENTER) {
+						s[x][y] = "―";  // hog line
+					}
+					if (x == X_CENTER) {
+						s[x][y] = "｜";  // center line
 					}
 				}
 			}
 
 			for (int i = 0; i < 16; i++) {
 				if (!(gs->body[i][0] == 0.0f && gs->body[i][0] == 0.0f)) {
-					if (gs->WhiteToMove == (gs->ShotNum % 2)) {
+					if (gs->WhiteToMove == (1 & (gs->ShotNum % 2))) {
 						if ((gs->ShotNum - 1) == i) {
 							s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "※" : "●";
 						}
@@ -159,25 +157,26 @@ namespace digital_curling {
 		int SimpleServer() {
 
 			// Open config file w/ json
-			std::ifstream config_file("config.json");
+			std::string config_path = "config.json";
+			std::ifstream config_file(config_path);
 			if (!config_file.is_open()) {
-				cerr << "failed to open config.json" << endl;
+				cerr << "failed to open " << config_path << endl;
 				return 0;
 			}
 
-			// Perse json
+			// Perse json via picojson
 			picojson::value val;
 			config_file >> val;
 			config_file.close();
 
 			// Get ofjects
-			picojson::object obj_match = val.get<picojson::object>()["match_default"].get<picojson::object>();
-			picojson::object obj_p1 = obj_match["player_1"].get<picojson::object>();
-			picojson::array params_p1 = obj_p1["params"].get<picojson::array>();
-			picojson::object obj_p2 = obj_match["player_2"].get<picojson::object>();
-			picojson::array params_p2 = obj_p2["params"].get<picojson::array>();
 			picojson::object obj_server = val.get<picojson::object>()["server"].get<picojson::object>();
 			picojson::object obj_sim = val.get<picojson::object>()["simulator"].get<picojson::object>();
+			picojson::object obj_match = val.get<picojson::object>()["match_default"].get<picojson::object>();
+			picojson::object obj_p1 = obj_match["player_1"].get<picojson::object>();
+			picojson::array params_p1 = obj_match["player_1"].get<picojson::object>()["params"].get<picojson::array>();
+			picojson::object obj_p2 = obj_match["player_2"].get<picojson::object>();
+			picojson::array params_p2 = obj_match["player_2"].get<picojson::object>()["params"].get<picojson::array>();
 
 			// Initialize LocalPlayer 1
 			digital_curling::LocalPlayer *p1;
@@ -191,7 +190,6 @@ namespace digital_curling {
 				return 0;
 			}
 			p1->mix_doubles = obj_p1["md"].get<bool>();
-			cerr << "p1->md = " << p1->mix_doubles << endl;
 
 			// Initialize LocalPlayer 2 
 			digital_curling::LocalPlayer *p2;
@@ -205,7 +203,6 @@ namespace digital_curling {
 				return 0;
 			}
 			p2->mix_doubles = obj_p2["md"].get<bool>();
-			cerr << "p2->md = " << p2->mix_doubles << endl;
 
 			// Get other parameters from json
 			int timeout_isready = (int)obj_server["timeout_isready"].get<double>();
@@ -227,6 +224,7 @@ namespace digital_curling {
 				rule_type = 1;
 			}
 			else {
+				cerr << "invalid rule_type from " << config_path << ", set rule_type_ = 0" << endl;
 				rule_type = 0;
 			}
 			digital_curling::GameProcess game_process(
@@ -237,7 +235,7 @@ namespace digital_curling {
 				sim_params
 			);
 
-			// Send "ISREADY" to player1
+			// Send "ISREADY" to both players
 			if (!game_process.IsReady(game_process.player1_, timeout_isready)) {
 				cerr << "failed to recieve ISREADY from player 1" << endl;
 				return 0;
@@ -290,8 +288,6 @@ namespace digital_curling {
 				PrintScoreBoard(&game_process);
 				cerr << "==========================================" << endl;
 				Sleep(50);  // wait for
-
-
 			}
 
 		EXIT_PROCESS:
@@ -301,16 +297,11 @@ namespace digital_curling {
 
 			return 1;
 		}
-
 	}
 }
 
 int main(void)
 {
-	//digital_curling::GameState gs;
-	//gs.Set(0, 2.375, 4.88);
-	//digital_curling::server::PrintBoard(&gs);
-
 	// run single game
 	digital_curling::server::SimpleServer();
 
