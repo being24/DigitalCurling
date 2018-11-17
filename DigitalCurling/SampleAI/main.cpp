@@ -314,8 +314,13 @@ bool DoCommand(char *Message)
 		//======================================================
 		// NOTE:
 		//  You should calclate the vector of shot and 
-		// return 'BESTSHOT' to the server.
+		// return 'BESTSHOT' or 'CONCED' to the server.
 		//======================================================
+		if (score_diff <= -8) {
+			// Send CONCEDE command if score behind  more than 8
+			Send("CONCEDE");
+			return true;
+		}
 
 		// You can get timelimit
 		unsigned int timelimit;
