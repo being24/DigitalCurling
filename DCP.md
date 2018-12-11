@@ -45,7 +45,7 @@ Server                          CurlingAI
 * `random` : type of random generator (0: Rectangular, 1: Polar)
 * `num_players` : number of players in 1 team
 
-### `PLAYERINFO rand1_0 rand2_0 shotmax_0 ... rand1_3 rand2_3 shotmax_3`
+#### `PLAYERINFO rand1_0 rand2_0 shotmax_0 ... rand1_3 rand2_3 shotmax_3`
 * Notifies parameters of each player.
 * `rand1_n` : size of random number 1 (x in Rectangular, v in Polar) for n th player
 * `rand2_n` : size of random number 2 (y in Rectangular, theta in Polar) for n th playr
