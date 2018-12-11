@@ -60,28 +60,28 @@ Server                          CurlingAI
 * Example of order below:
 
 `SETORDER 0 2 1 3` (Normal rule):
-|shot number**|random_1|random_2|shot_max|
-|:--:|:--:|:--:|:--:|
-|0|rand1_0|rand2_0|shotmax_0|
-|1|rand1_2|rand2_2|shotmax_2|
-|2|rand1_1|rand2_1|shotmax_1|
-|3|rand1_3|rand2_3|shotmax_3|
-|4|rand1_0|rand2_0|shotmax_0|
-|5|rand1_2|rand2_2|shotmax_2|
-|6|rand1_1|rand2_1|shotmax_1|
-|7|rand1_3|rand2_3|shotmax_3|
+| shot number** | random_1 | random_2 | shot_max |
+| :---: | :---: | :---: | :---: |
+| 0 | rand1_0 | rand2_0 | shotmax_0 |
+| 1 | rand1_2 | rand2_2 | shotmax_2 |
+| 2 | rand1_1 | rand2_1 | shotmax_1 |
+| 3 | rand1_3 | rand2_3 | shotmax_3 |
+| 4 | rand1_0 | rand2_0 | shotmax_0 |
+| 5 | rand1_2 | rand2_2 | shotmax_2 |
+| 6 | rand1_1 | rand2_1 | shotmax_1 |
+| 7 | rand1_3 | rand2_3 | shotmax_3 |
 
 `SETORDER 0 1` (Mix Doubles):
-|shot number**|random_1|random_2|shot_max|
-|:--:|:--:|:--:|:--:|
-|0|-|-|-|
-|1|-|-|-|
-|2|-|-|-|
-|3|rand1_0|rand2_0|shotmax_0|
-|4|rand1_1|rand2_1|shotmax_1|
-|5|rand1_1|rand2_1|shotmax_1|
-|6|rand1_1|rand2_1|shotmax_1|
-|7|rand1_0|rand2_0|shotmax_0|
+| shot number** | random_1 | random_2 | shot_max |
+| :---: | :---: | :---: | :---: |
+| 0 | - | - | - |
+| 1 | - | - | - |
+| 2 | - | - | - |
+| 3 | rand1_0 | rand2_0 | shotmax_0 |
+| 4 | rand1_1 | rand2_1 | shotmax_1 |
+| 5 | rand1_1 | rand2_1 | shotmax_1 |
+| 6 | rand1_1 | rand2_1 | shotmax_1 |
+| 7 | rand1_0 | rand2_0 | shotmax_0 |
 
 *Each parameters are from `PLAYERINFO` command  
 **'shot number' is number for each player
