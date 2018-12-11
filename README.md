@@ -39,6 +39,6 @@
 * DCP provides command for communication between the server and Curling AIs.
 * Each message contains a command and arguments such as `COMMAND arg1 arg2...`.
 
-### -> Details of each commands on DCP.md
+### -> Details of each commands on [DCP.md](https://github.com/digitalcurling/DigitalCurling/blob/master/DCP.md)
 
 ## Mix Doubles Curling
