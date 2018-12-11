@@ -37,19 +37,19 @@ Server                          CurlingAI
 
 #### `NEWGAME name1 name2`
 * Notifies a new game will start.
-* `name 1`, `name2` : Name of each player
+   * `name 1`, `name2` : Name of each player
 
 #### `GAMEINFO rule random num_players`
 * Notifies information about this match.
-* `rule` : type of rule (0: normal, 1:Mix Double)
-* `random` : type of random generator (0: Rectangular, 1: Polar)
-* `num_players` : number of players in 1 team
+   * `rule` : type of rule (0: normal, 1:Mix Double)
+   * `random` : type of random generator (0: Rectangular, 1: Polar)
+   * `num_players` : number of players in 1 team
 
 #### `PLAYERINFO rand1_0 rand2_0 shotmax_0 ... rand1_3 rand2_3 shotmax_3`
 * Notifies parameters of each player.
-* `rand1_n` : size of random number 1 (x in Rectangular, v in Polar) for n th player
-* `rand2_n` : size of random number 2 (y in Rectangular, theta in Polar) for n th playr
-* `shotmax_n` : max size of shot vector
+   * `rand1_n` : size of random number 1 (x in Rectangular, v in Polar) for n th player
+   * `rand2_n` : size of random number 2 (y in Rectangular, theta in Polar) for n th playr
+   * `shotmax_n` : max size of shot vector
 *  The number 'n' is up to 1 (Mix Doubles) or 3 (Normal rule).
 
 #### `SETORDER`
@@ -57,6 +57,7 @@ Server                          CurlingAI
 * Set order for each shot.
 * AI should return order of players after recieving this command.
 * This command is omitted if `num_players` = 1 in `GAMEINFO` command.
+   * `mn` : player number (from `PLAYERINFO` command) who throw n th shot.
 * Example of order below:
 
 `SETORDER 0 2 1 3` (Normal rule):  
@@ -91,29 +92,29 @@ Server                          CurlingAI
 #### `PUTSTONE`
 #### `PUTSTONE type`
 * For putting stone (only Mix Doubles).
-* `type` : type of positions
+   * `type` : type of positions
 
 #### `SETSTATE shot c_end l_end move`
 * Notifies information about current state.
-* `shot` : Number of shot
-* `c_end` : Number of current end
-* `l_end` : Number of last end
-* `move` : Which player has next stone (0: first, 1: second in first end)
+   * `shot` : Number of shot
+   * `c_end` : Number of current end
+   * `l_end` : Number of last end
+   * `move` : Which player has next stone (0: first, 1: second in first end)
 
 #### `POSITION x0 y0 ... x15 y15`
 * Notifies positions of 15 stones.
-* `xn`, `yn` : x, y coordinate of nth stone
+   * `xn`, `yn` : x, y coordinate of nth stone
 
 #### `GO timelimit1 timelimit2`
 * Notifies the thinking time is start.
-* `timelimmit` : timelimit for 1st and 2nd player in 1st end (miliseconds)
+   * `timelimmit` : timelimit for 1st and 2nd player in 1st end (miliseconds)
 * AI should return `BESTSHOT`/`CONCEDE` command in timelimit [ms].
 
 #### `BESTSHOT x y angle`
 * Returns the shot vector to throw.
-* `x` : x coordinate of shot vector
-* `y` : y coordinate of shot vector
-* `angle` : angle of curl (0: right, 1:left)
+   * `x` : x coordinate of shot vector
+   * `y` : y coordinate of shot vector
+   * `angle` : angle of curl (0: right, 1:left)
 * If `y` is bigger than `shotmax_n` from `PLAYERINFO` command,  
 the shot will be `0 0 0` as illegal shot.
 
@@ -123,11 +124,11 @@ the shot will be `0 0 0` as illegal shot.
 
 #### `SCORE score0 ... score9`
 * Notifies the scores.
-* `scoren` : score of nth end (>0: 1st player scored, <0: 2nd player scored)
+   * `scoren` : score of nth end (>0: 1st player scored, <0: 2nd player scored)
 
 #### `GAMEOVER win`
 * Notifies the  match finished.
-* `win` : `WIN` or `LOSE` or `DRAW`
+   * `win` : `WIN` or `LOSE` or `DRAW`
 
 ---
 
