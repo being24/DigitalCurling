@@ -12,6 +12,25 @@ using std::endl;
 
 namespace digital_curling
 {
+	PlayerInfo::PlayerInfo() {
+		nplayers = 0;
+		for (unsigned int i = 0; i < 4; i++) {
+			params[i].random_1 = 0.0f;
+			params[i].random_2 = 0.0f;
+			params[i].shot_max = 0.0f;
+			order[i] = i;
+		}
+	}
+	PlayerInfo::PlayerInfo(unsigned int num_players) {
+		nplayers = num_players;
+		for (unsigned int i = 0; i < nplayers; i++) {
+			params[i].random_1 = 0.0f;
+			params[i].random_2 = 0.0f;
+			params[i].shot_max = 0.0f;
+			order[i] = i;
+		}
+	}
+
 	LocalPlayer::LocalPlayer(std::string path, int time_limit, float random_x, float random_y)
 	{
 		// set file path
@@ -36,8 +55,34 @@ namespace digital_curling
 		}
 
 		// set random numbers
-		random_x_ = random_x;
-		random_y_ = random_y;
+		pinfo_.params[0].random_1 = random_x;
+		pinfo_.params[0].random_2 = random_y;
+	}
+
+	LocalPlayer::LocalPlayer(std::string path, int time_limit, PlayerInfo pinfo) {
+		// set file path
+		path_ = path;
+
+		// get name from path
+		std::istringstream sstream(path);
+		std::string name;
+		// remove directories from path
+		while (std::getline(sstream, name, '\\'));
+		std::istringstream exe_file_name(name);
+		// remove .exe from path
+		std::getline(exe_file_name, name, '.');
+		name_ = name;
+
+		// set timelimit
+		if (time_limit > 0) {
+			time_limit_ = time_remain_ = time_limit;
+		}
+		else {
+			time_limit_ = time_remain_ = INT_MAX;
+		}
+
+		// set player info
+		pinfo_ = pinfo;
 	}
 
 	LocalPlayer::~LocalPlayer() {}

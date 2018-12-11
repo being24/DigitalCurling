@@ -14,6 +14,9 @@ using std::endl;
 
 namespace digital_curling
 {
+	const int shotnum_order_table_normal[16]      = {0, 0, 1, 1, 2, 2, 3, 3, 0, 0, 1, 1, 2, 2, 3, 3};
+	const int shotnum_order_table_mix_doubles[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0};
+
 	GameProcess::GameProcess(Player *p1, Player *p2, int num_ends, int rule_type) : rule_type_(rule_type), log_file_(p1, p2) {
 
 		// Initialize state of the game
@@ -148,8 +151,8 @@ namespace digital_curling
 		std::stringstream sstream2;
 
 		// Send 'RANDOMSIZE'
-		sstream << "RANDOMSIZE " << player1_->random_x_ << " " << player1_->random_y_ << endl;
-		sstream2 << "RANDOMSIZE " << player2_->random_x_ << " " << player2_->random_y_ << endl;
+		//sstream << "RANDOMSIZE " << player1_->random_x_ << " " << player1_->random_y_ << endl;
+		//sstream2 << "RANDOMSIZE " << player2_->random_x_ << " " << player2_->random_y_ << endl;
 
 		player1_->Send(sstream.str().c_str());
 		player2_->Send(sstream2.str().c_str());
@@ -413,8 +416,21 @@ namespace digital_curling
 	// Simulate a shot
 	bool GameProcess::RunSimulation() {
 		Player *p = (gs_.WhiteToMove) ? player2_ : player1_;
+
 		//Simulation(&gs_, best_shot_, p->random_x_, &run_shot_, -1);
-		sim->Simulation(&gs_, best_shot_, p->random_x_, p->random_y_, &run_shot_, nullptr, 0);
+		//sim->Simulation(&gs_, best_shot_, p->random_x_, p->random_y_, &run_shot_, nullptr, 0);
+
+		int order_num;
+		if (rule_type_ == 0) {
+			order_num = shotnum_order_table_normal[gs_.ShotNum];
+		}
+		else if (rule_type_ == 1) {
+			order_num = shotnum_order_table_mix_doubles[gs_.ShotNum];
+		}
+		int shot_num = p->pinfo_.order[order_num];
+		float rand_1 = p->pinfo_.params[shot_num].random_1;
+		float rand_2 = p->pinfo_.params[shot_num].random_2;
+		sim->Simulation(&gs_, best_shot_, rand_1, rand_2, &run_shot_, nullptr, 0);
 
 		// Write to log file
 		std::stringstream sstream;

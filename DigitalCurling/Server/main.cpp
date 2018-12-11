@@ -37,6 +37,39 @@ namespace digital_curling {
 			return player;
 		}
 
+		// Initialize player from params via picojson
+		Player* SetPlayer(picojson::object obj) {
+			picojson::array params = obj["params"].get<picojson::array>();
+
+			PlayerInfo pinfo(int(params.size()));
+			int i = 0;
+			for (picojson::array::iterator it = params.begin(); it != params.end(); it++) {
+				pinfo.params[i].random_1 = (float)it->get<picojson::object>()["random_1"].get<double>();
+				pinfo.params[i].random_2 = (float)it->get<picojson::object>()["random_2"].get<double>();
+				pinfo.params[i].shot_max = (float)it->get<picojson::object>()["weight_max"].get<double>();
+				pinfo.order[i] = i;
+				i++;
+			}
+			if (pinfo.nplayers == 1) {
+				for (i = 1; i < 4; i++) {
+					pinfo.params[i].random_1 = pinfo.params[0].random_1;
+					pinfo.params[i].random_2 = pinfo.params[0].random_2;
+					pinfo.params[i].shot_max = pinfo.params[0].shot_max;
+				}
+			}
+			Player *p = new LocalPlayer(
+				obj["path"].get<string>(),
+				(int)obj["timelimit"].get<double>(),
+				pinfo);
+			if (p->InitProcess() == 0) {
+				cerr << "failed to create process for player" << endl;
+				return 0;
+			}
+			p->mix_doubles = obj["md"].get<bool>();
+
+			return p;
+		}
+
 		// Print score board on console
 		void PrintScoreBoard(const GameProcess* const gp) {
 			// Print for first player
@@ -169,44 +202,25 @@ namespace digital_curling {
 			config_file >> val;
 			config_file.close();
 
-			// Get ofjects
-			picojson::object obj_server = val.get<picojson::object>()["server"].get<picojson::object>();
-			picojson::object obj_sim = val.get<picojson::object>()["simulator"].get<picojson::object>();
+			// Get objects
+			picojson::object obj_server = val.get<picojson::object>()["server"].get<picojson::object>();  // Simulator
+			picojson::object obj_sim = val.get<picojson::object>()["simulator"].get<picojson::object>();  // Server
+
 			if (!val.get<picojson::object>()[match_name].is<picojson::object>()) {
 				cerr << "failed to find match '" << match_name << "' in " << config_path << "." << endl;
 				return 0;
 			}
-			picojson::object obj_match = val.get<picojson::object>()[match_name].get<picojson::object>();
-			picojson::object obj_p1 = obj_match["player_1"].get<picojson::object>();
-			picojson::array params_p1 = obj_match["player_1"].get<picojson::object>()["params"].get<picojson::array>();
-			picojson::object obj_p2 = obj_match["player_2"].get<picojson::object>();
-			picojson::array params_p2 = obj_match["player_2"].get<picojson::object>()["params"].get<picojson::array>();
+			picojson::object obj_match = val.get<picojson::object>()[match_name].get<picojson::object>();  // match
+			picojson::object obj_p1 = obj_match["player_1"].get<picojson::object>();  // player 1
+			picojson::object obj_p2 = obj_match["player_2"].get<picojson::object>();  // player 2
 
 			// Initialize LocalPlayer 1
-			digital_curling::LocalPlayer *p1;
-			p1 = new LocalPlayer(
-				obj_p1["path"].get<string>(), 
-				(int)obj_p1["timelimit"].get<double>(),
-				(float)params_p1.begin()->get<picojson::object>()["random_1"].get<double>(), 
-				(float)params_p1.begin()->get<picojson::object>()["random_2"].get<double>());
-			if (p1->InitProcess() == 0) {
-				cerr << "failed to create process for player 1" << endl;
-				return 0;
-			}
-			p1->mix_doubles = obj_p1["md"].get<bool>();
+			digital_curling::Player *p1;
+			p1 = SetPlayer(obj_p1);
 
 			// Initialize LocalPlayer 2 
-			digital_curling::LocalPlayer *p2;
-			p2 = new LocalPlayer(
-				obj_p2["path"].get<string>(),
-				(int)obj_p2["timelimit"].get<double>(),
-				(float)params_p2.begin()->get<picojson::object>()["random_1"].get<double>(),
-				(float)params_p2.begin()->get<picojson::object>()["random_2"].get<double>());
-			if (p2->InitProcess() == 0) {
-				cerr << "failed to create process for player 2" << endl;
-				return 0;
-			}
-			p2->mix_doubles = obj_p2["md"].get<bool>();
+			digital_curling::Player *p2;
+			p2 = SetPlayer(obj_p2);
 
 			// Get other parameters from json
 			int timeout_isready = (int)obj_server["timeout_isready"].get<double>();

@@ -3,8 +3,22 @@
 #include <Windows.h>
 #include <string>
 
-namespace digital_curling
-{
+namespace digital_curling {
+
+	// Player information
+	struct PlayerInfo {
+		unsigned int nplayers;       // number of players
+		unsigned int order[4];        // shot order
+		struct Params {
+			float random_1;  // size of random 1 (x or v)
+			float random_2;  // size of random 2 (y or theta)
+			float shot_max;  // max size of shot
+		} params[4];        // parameters of each player
+
+		PlayerInfo();
+		PlayerInfo(unsigned int num_players);
+	};
+
 	// Information of player (abstruct class)
 	class Player {
 	public:
@@ -12,9 +26,9 @@ namespace digital_curling
 		static const int kTimeLimitInfinite = INT_MAX;
 
 		// Send message from player
-		virtual int Send( const char *message) = 0;
+		virtual int Send(const char *message) = 0;
 		// Recieve message from player
-		virtual int Recv( char *message) = 0;
+		virtual int Recv(char *message) = 0;
 
 		// Create process 
 		// This function returns 0 when CreateProcess was failed
@@ -26,8 +40,10 @@ namespace digital_curling
 		int time_limit_;    // Timelimit
 		int time_remain_;   // Timelimit remaining
 
-		float random_x_;    // random number x
-		float random_y_;    // random number y
+		//float random_x_;    // random number x
+		//float random_y_;    // random number y
+
+		PlayerInfo pinfo_;
 		
 		bool mix_doubles;
 	};
@@ -35,8 +51,8 @@ namespace digital_curling
 	// Player running on local
 	class LocalPlayer : public Player {
 	public:
-
-		LocalPlayer( std::string path, int time_limit, float random_x, float random_y);
+		LocalPlayer(std::string path, int time_limit, float random_x, float random_y);
+		LocalPlayer(std::string path, int time_limit, PlayerInfo pinfo);
 		~LocalPlayer();
 
 		// Send message to player
