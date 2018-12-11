@@ -27,7 +27,7 @@ namespace digital_curling
 		enum {
 			ERR,
 			BESTSHOT,
-			CONCEED,
+			CONCEDE,
 			TIMEOUT
 		};
 

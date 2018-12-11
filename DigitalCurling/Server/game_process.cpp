@@ -369,9 +369,6 @@ namespace digital_curling
 				next_player->time_remain_ -= (int)time_used;
 			}
 
-			// Write to logfile
-			log_file_.Write("BESTSHOT=" + std::string(msg));  // TODO: move to appropriate place
-
 			// Split message as token
 			//char msg_tmp[digital_curling::Player::kBufferSize];
 			//std::char_traits<char>::copy(msg_tmp, msg.c_str(), msg.size() + 1);
@@ -391,12 +388,18 @@ namespace digital_curling
 				best_shot_.y = (float)atof(tokens[2].c_str());
 				best_shot_.angle = (bool)atoi(tokens[3].c_str());
 
+				// Write to logfile
+				std::stringstream sstream;
+				sstream << "BESTSHOT=BESTSHOT" << best_shot_.x << ' ' << best_shot_.y << ' ' << best_shot_.angle;
+				log_file_.Write(sstream.str());
+
 				return BESTSHOT;
 			}
 			else if (tokens[0] == "CONSEED") {
 				// Jump to conseed and exit process if command is 'CONSEED'
 				// TODO: jump to conseed and exit process
-				return CONCEED;
+				log_file_.Write("BESTSHOT=CONCEDE");
+				return CONCEDE;
 			}
 			else {
 				// Print error message and exit
@@ -430,11 +433,19 @@ namespace digital_curling
 		int shot_num = p->pinfo_.order[order_num];
 		float rand_1 = p->pinfo_.params[shot_num].random_1;
 		float rand_2 = p->pinfo_.params[shot_num].random_2;
+		float shot_max = p->pinfo_.params[shot_num].shot_max;
+		// Check illegal shot
+		if (best_shot_.y > shot_max) {
+			best_shot_.x = 0.0f;
+			best_shot_.y = 0.0f;
+			best_shot_.angle = false;
+		}
 		sim->Simulation(&gs_, best_shot_, rand_1, rand_2, &run_shot_, nullptr, 0);
 
 		// Write to log file
 		std::stringstream sstream;
-		sstream << "RUNSHOT=RUNSHOT " << run_shot_.x << ' ' << run_shot_.y << ' ' << run_shot_.angle;
+		sstream << "PARAM=PARAM " << rand_1 << ' ' << rand_2 << ' ' << shot_max << endl;  // Parameters
+		sstream << "RUNSHOT=RUNSHOT " << run_shot_.x << ' ' << run_shot_.y << ' ' << run_shot_.angle;  // Runshot
 		log_file_.Write(sstream.str());
 
 		return true;
