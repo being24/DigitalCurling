@@ -59,7 +59,8 @@ Server                          CurlingAI
 * This command is omitted if `num_players` = 1 in `GAMEINFO` command.
 * Example of order below:
 
-`SETORDER 0 2 1 3` (Normal rule):
+`SETORDER 0 2 1 3` (Normal rule):  
+
 | shot number** | random_1 | random_2 | shot_max |
 | :---: | :---: | :---: | :---: |
 | 0 | rand1_0 | rand2_0 | shotmax_0 |
@@ -71,7 +72,8 @@ Server                          CurlingAI
 | 6 | rand1_1 | rand2_1 | shotmax_1 |
 | 7 | rand1_3 | rand2_3 | shotmax_3 |
 
-`SETORDER 0 1` (Mix Doubles):
+`SETORDER 0 1` (Mix Doubles):  
+
 | shot number** | random_1 | random_2 | shot_max |
 | :---: | :---: | :---: | :---: |
 | 0 | - | - | - |
