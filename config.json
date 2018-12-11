@@ -15,20 +15,62 @@
     "rand_type_all": ["RECTANGULAR", "POLAR"]
   },
 
-  "match_default": {
-    "rule_type": "normal",
-    "rule_type_all": ["normal", "mix_doubles"],
+  "match_GAT2018_Mix" : {
+    "rule_type": "mix_doubles",
     "ends": 8,
     "player_1": {
       "type": "local",
-      "type_all": ["local"],
       "path": "SampleAI.exe",
       "timelimit": 219000,
       "params": [
         {
           "random_1": 0.0725,
           "random_2": 0.2900,
-          "weight_max": 48.79
+          "weight_max": 50.000
+        },
+        {
+          "random_1": 0.10875,
+          "random_2": 0.4350,
+          "weight_max": 75.000
+        },
+        null,
+        null
+      ]
+    },
+    "player_2": {
+      "type": "local",
+      "path": "SampleAI.exe",
+      "timelimit": 219000,
+      "params": [
+        {
+          "random_1": 0.0725,
+          "random_2": 0.2900,
+          "weight_max": 50.000
+        },
+        {
+          "random_1": 0.10875,
+          "random_2": 0.4350,
+          "weight_max": 75.000
+        },
+        null,
+        null
+      ]
+    },
+    "repetition": 1
+  },
+
+  "match_GAT2018_Normal" : {
+    "rule_type": "normal",
+    "ends": 8,
+    "player_1": {
+      "type": "local",
+      "path": "SampleAI.exe",
+      "timelimit": 219000,
+      "params": [
+        {
+          "random_1": 0.0725,
+          "random_2": 0.2900,
+          "weight_max": 50.000
         },
         null,
         null,
@@ -43,7 +85,7 @@
         {
           "random_1": 0.0725,
           "random_2": 0.2900,
-          "weight_max": 48.79
+          "weight_max": 50.000
         },
         null,
         null,
