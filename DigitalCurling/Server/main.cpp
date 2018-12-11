@@ -27,15 +27,12 @@ namespace digital_curling {
 
 	namespace server {
 
-		// Initialize player from params[3]
-		Player* SetPlayer(std::vector<string> params) {
-			Player *player = new digital_curling::LocalPlayer(
-				params[1],
-				atoi(params[2].c_str()),
-				(float)atof(params[3].c_str()),
-				(float)atof(params[4].c_str()));
-			return player;
-		}
+		// Server options
+		struct Options {
+			int timeout_isready;
+			int timeout_preend;
+			int timeout_setorder;
+		};
 
 		// Initialize player from params via picojson
 		Player* SetPlayer(picojson::object obj) {
@@ -186,11 +183,8 @@ namespace digital_curling {
 			}
 		}
 
-		// Simple server for DigitalCurling
-		int SimpleServer(std::string match_name) {
-
-			// Open config file w/ json
-			std::string config_path = "config.json";
+		// Load config and initialize game process
+		GameProcess* Init(std::string config_path, std::string match_name, Options &options) {
 			std::ifstream config_file(config_path);
 			if (!config_file.is_open()) {
 				cerr << "failed to open " << config_path << endl;
@@ -214,7 +208,7 @@ namespace digital_curling {
 			picojson::object obj_p1 = obj_match["player_1"].get<picojson::object>();  // player 1
 			picojson::object obj_p2 = obj_match["player_2"].get<picojson::object>();  // player 2
 
-			// Initialize LocalPlayer 1
+																					  // Initialize LocalPlayer 1
 			digital_curling::Player *p1;
 			p1 = SetPlayer(obj_p1);
 
@@ -223,11 +217,11 @@ namespace digital_curling {
 			p2 = SetPlayer(obj_p2);
 
 			// Get other parameters from json
-			int timeout_isready = (int)obj_server["timeout_isready"].get<double>();
-			int timeout_preend = (int)obj_server["timeout_preend"].get<double>();
-			//bool output_dcl = obj_server["output_dcl"].get<bool>();
-			//bool output_json = obj_server["output_json"].get<bool>();
-			//bool output_server_log = obj_server["output_server_log"].get<bool>();
+			options.timeout_isready = (int)obj_server["timeout_isready"].get<double>();
+			options.timeout_preend = (int)obj_server["timeout_preend"].get<double>();
+			//opt.output_dcl = obj_server["output_dcl"].get<bool>();
+			//opt.output_json = obj_server["output_json"].get<bool>();
+			//opt.output_server_log = obj_server["output_server_log"].get<bool>();
 			SimulatorParams sim_params;
 			sim_params.friction = (float)obj_sim["friction"].get<double>();
 			sim_params.random_generator = (obj_sim["rand_type"].get<string>() == "RECTANGULAR") ? b2simulator::RECTANGULAR : b2simulator::POLAR;
@@ -245,7 +239,7 @@ namespace digital_curling {
 				cerr << "invalid rule_type from " << config_path << ", set rule_type_ = 0" << endl;
 				rule_type = 0;
 			}
-			digital_curling::GameProcess game_process(
+			digital_curling::GameProcess *game_process = new GameProcess(
 				p1,
 				p2,
 				(int)obj_match["ends"].get<double>(),
@@ -253,12 +247,25 @@ namespace digital_curling {
 				sim_params
 			);
 
+			return game_process;
+		}
+
+		// Simple server for DigitalCurling
+		int SimpleServer(std::string match_name) {
+
+			// Open config file w/ json
+			std::string config_path = "config.json";
+			Options opt;
+			
+			GameProcess *gp = Init(config_path, match_name, opt);
+			GameProcess game_process = *gp;
+
 			// Send "ISREADY" to both players
-			if (!game_process.IsReady(game_process.player1_, timeout_isready)) {
+			if (!game_process.IsReady(game_process.player1_, opt.timeout_isready)) {
 				cerr << "failed to recieve ISREADY from player 1" << endl;
 				return 0;
 			}
-			if (!game_process.IsReady(game_process.player2_, timeout_isready)) {
+			if (!game_process.IsReady(game_process.player2_, opt.timeout_isready)) {
 				cerr << "failed to recieve ISREADY from player 2" << endl;
 				return 0;
 			}
@@ -271,7 +278,7 @@ namespace digital_curling {
 
 				// Prepare for End
 				cerr << "Preparing for end..." << endl;
-				game_process.PrepareEnd(timeout_preend);
+				game_process.PrepareEnd(opt.timeout_preend);
 
 				//do {
 				while (game_process.gs_.ShotNum < 16) {
