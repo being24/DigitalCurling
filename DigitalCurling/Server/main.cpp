@@ -32,6 +32,9 @@ namespace digital_curling {
 			int timeout_isready;
 			int timeout_preend;
 			int timeout_setorder;
+			bool output_dcl;
+			bool output_json;
+			bool output_server_log;
 		};
 
 		// Initialize player from params via picojson
@@ -204,29 +207,32 @@ namespace digital_curling {
 				cerr << "failed to find match '" << match_name << "' in " << config_path << "." << endl;
 				return 0;
 			}
-			picojson::object obj_match = val.get<picojson::object>()[match_name].get<picojson::object>();  // match
+			picojson::object obj_match = val.get<picojson::object>()[match_name].get<picojson::object>();  // Match
 			picojson::object obj_p1 = obj_match["player_1"].get<picojson::object>();  // player 1
 			picojson::object obj_p2 = obj_match["player_2"].get<picojson::object>();  // player 2
 
-																					  // Initialize LocalPlayer 1
+			// Initialize Player 1
 			digital_curling::Player *p1;
 			p1 = SetPlayer(obj_p1);
 
-			// Initialize LocalPlayer 2 
+			// Initialize Player 2 
 			digital_curling::Player *p2;
 			p2 = SetPlayer(obj_p2);
 
-			// Get other parameters from json
+			// Get server parameters
 			options.timeout_isready = (int)obj_server["timeout_isready"].get<double>();
 			options.timeout_preend = (int)obj_server["timeout_preend"].get<double>();
-			//opt.output_dcl = obj_server["output_dcl"].get<bool>();
-			//opt.output_json = obj_server["output_json"].get<bool>();
-			//opt.output_server_log = obj_server["output_server_log"].get<bool>();
+			options.output_dcl = obj_server["output_dcl"].get<bool>();
+			options.output_json = obj_server["output_json"].get<bool>();
+			options.output_server_log = obj_server["output_server_log"].get<bool>();
+
+			// Get simulator parameters
 			SimulatorParams sim_params;
 			sim_params.friction = (float)obj_sim["friction"].get<double>();
 			sim_params.random_generator = (obj_sim["rand_type"].get<string>() == "RECTANGULAR") ? b2simulator::RECTANGULAR : b2simulator::POLAR;
+			sim_params.freeguard_num = (unsigned int)obj_sim["freeguard_num"].get<double>();
 
-			// Create GameProcess
+			// Get rule type
 			int rule_type;
 			string str = obj_match["rule_type"].get<string>();
 			if (str == "normal") {
@@ -239,11 +245,17 @@ namespace digital_curling {
 				cerr << "invalid rule_type from " << config_path << ", set rule_type_ = 0" << endl;
 				rule_type = 0;
 			}
+
+			// Get extended end
+			bool extended_end = obj_match["extended_end"].get<bool>();
+
+			// Create GameProcess
 			digital_curling::GameProcess *game_process = new GameProcess(
 				p1,
 				p2,
 				(int)obj_match["ends"].get<double>(),
 				rule_type,
+				extended_end,
 				sim_params
 			);
 
@@ -319,6 +331,17 @@ namespace digital_curling {
 			// Exit Game
 			game_process.Exit();
 			cerr << "game_end" << endl;
+
+			// Extra end
+			/*
+			GameState gs_old = game_process.gs_;
+			game_process.gs_.LastEnd = 1;
+			game_process.gs_.CurEnd = 0;
+			game_process.gs_.ShotNum = 0;
+			for (int i = 0; i < 10; i++) {
+				game_process.gs_.Score[i] = 0;
+			}
+			*/
 
 			return 1;
 		}

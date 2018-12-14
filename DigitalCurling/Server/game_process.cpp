@@ -38,7 +38,7 @@ namespace digital_curling
 		sim = new b2simulator::Simulator();
 	}
 
-	GameProcess::GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, SimulatorParams params) : rule_type_(rule_type), log_file_(p1, p2) {
+	GameProcess::GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, bool extended_end, SimulatorParams params) : rule_type_(rule_type), log_file_(p1, p2), extended_end_(extended_end) {
 
 		// Initialize state of the game
 		memset(&gs_, 0, sizeof(GameState));
@@ -161,8 +161,54 @@ namespace digital_curling
 		return true;
 	}
 
+	// Set delivery order
+	bool SetDeliveryOrder(Player* const p, int rule_type, unsigned int time_out) {
+
+		char msg[Player::kBufferSize];
+
+		// Prepare recieve thread
+		std::string str;
+		std::future<void> f = std::async(std::launch::async, RecvThread2, std::ref(str), p);
+		Sleep(100);
+
+		p->Send("SETORDER");
+
+		// Wait for message is ready
+		std::future_status result = f.wait_for(std::chrono::milliseconds(time_out));
+
+		if (result != std::future_status::timeout) {
+			strcpy_s(msg, Player::kBufferSize, str.c_str());
+
+			// split message as token
+			std::vector<std::string> tokens = digital_curling::SpritAsTokens(msg, " ");
+			if (tokens.size() == 0) {
+				cerr << "Error: empty message" << endl;
+				return false;
+			}
+			if (tokens[0] != "SETORDER") {
+				cerr << "Error: invalid command '" << tokens[0] << "'" << endl;
+				return false;
+			}
+		}
+		else {
+			cerr << "Error: timeout for READYOK" << endl;
+			return false;
+		}
+
+		// TODO: Set Order
+		if (rule_type == 0) {
+
+		}
+		else {
+
+		}
+
+		return true;
+	}
+
 	// Prepare for End
 	bool GameProcess::PrepareEnd(unsigned int time_out) {
+		
 		if (player1_ == nullptr || player2_ == nullptr) {
 			return false;
 		}
@@ -279,6 +325,10 @@ namespace digital_curling
 
 			gs_.ShotNum = 6;
 		}
+
+		// Set delivery order
+		SetDeliveryOrder(player1_, rule_type_, time_out);
+		SetDeliveryOrder(player2_, rule_type_, time_out);
 
 		return true;
 	}

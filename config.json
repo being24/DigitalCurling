@@ -4,7 +4,7 @@
     "timeout_preend": 5000,
     "output_dcl": true,
     "output_json": false,
-    "output_server_log":  false
+    "output_server_log":  false,
   },
 
   "simulator": {
@@ -12,7 +12,8 @@
     "friction_default": 12.009216,
     "stone_friction": 0.500,
     "rand_type": "RECTANGULAR",
-    "rand_type_all": ["RECTANGULAR", "POLAR"]
+    "rand_type_all": ["RECTANGULAR", "POLAR"],
+    "freeguard_num": 5
   },
 
   "match_GAT2018_Mix" : {
@@ -56,6 +57,7 @@
         null
       ]
     },
+    "extended_end": true,
     "repetition": 1
   },
 
@@ -92,6 +94,7 @@
         null
       ]
     },
+    "extended_end": true,
     "repetition": 1
   }
 }

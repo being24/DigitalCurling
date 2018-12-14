@@ -15,13 +15,14 @@ namespace digital_curling
 	struct SimulatorParams {
 		float friction;
 		int random_generator;
+		unsigned int freeguard_num;
 	};
 
 	// DigitalCrling game
 	class GameProcess {
 	public:
 		GameProcess(Player *p1, Player *p2, int num_ends, int rule_type);
-		GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, SimulatorParams params);
+		GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, bool extend_end, SimulatorParams params);
 		~GameProcess();
 
 		enum {
@@ -69,6 +70,8 @@ namespace digital_curling
 		Player    *player2_;   // Player 2
 
 		GameLog log_file_;     // log file
+
+		bool extended_end_;     // do extended end if draw
 	};
 
 	// Split message as tokens
