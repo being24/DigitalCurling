@@ -363,10 +363,10 @@ namespace digital_curling {
 			while (getline (std::cin, s)) {
 
 				// Get tokens from input
-				std::stringstream sstring(s);
+				std::stringstream sstream(s);
 				std::vector<std::string> tokens;
 				std::string tok;
-				while (getline(sstring, tok, ' ')) {
+				while (getline(sstream, tok, ' ')) {
 					if (!tok.empty()) {
 						tokens.push_back(tok);
 					}
