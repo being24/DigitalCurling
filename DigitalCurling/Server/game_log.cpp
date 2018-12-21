@@ -12,8 +12,15 @@ namespace digital_curling {
 
 	// Create file and write 'GameInfo' statement
 	GameLog::GameLog(const Player* const p1, const Player* const p2) {
+		Create(p1, p2);
+	}
+
+	// Create new file
+	GameLog::~GameLog() {}
+
+	bool GameLog::Create(const Player* const p1, const Player* const p2) {
 		if (p1 == nullptr || p2 == nullptr) {
-			return;
+			return false;
 		}
 
 		// Get current time
@@ -30,7 +37,7 @@ namespace digital_curling {
 		// Create file
 		std::ofstream ofs(file_path_);
 		if (!ofs.is_open()) {
-			return;
+			return false;
 		}
 
 		// Write 'GameInfo' statement
@@ -44,8 +51,6 @@ namespace digital_curling {
 		ofs << "SecondRandom_1=" << p2->pinfo_.params[0].random_1 << endl;
 		ofs << "SecondRandom_2=" << p2->pinfo_.params[0].random_2 << endl;
 	}
-
-	GameLog::~GameLog() {}
 
 	// Write to logfile
 	void GameLog::Write(std::string message)

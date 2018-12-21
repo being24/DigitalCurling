@@ -143,18 +143,18 @@ namespace digital_curling {
 				if (!(gs->body[i][0] == 0.0f && gs->body[i][0] == 0.0f)) {
 					if (gs->WhiteToMove == (1 & (gs->ShotNum % 2))) {
 						if ((gs->ShotNum - 1) == i) {
-							s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "Å¶" : "Åú";
+							s[(int)(gs->body[i][0] / discrete_size)][(int)(gs->body[i][1] / discrete_size)] = (i % 2) ? "Å¶" : "Åú";
 						}
 						else {
-							s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "Å~" : "ÅZ";
+							s[(int)(gs->body[i][0] / discrete_size)][(int)(gs->body[i][1] / discrete_size)] = (i % 2) ? "Å~" : "ÅZ";
 						}
 					}
 					else {
 						if ((gs->ShotNum - 1) == i) {
-							s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "Åú" : "Å¶";
+							s[(int)(gs->body[i][0] / discrete_size)][(int)(gs->body[i][1] / discrete_size)] = (i % 2) ? "Åú" : "Å¶";
 						}
 						else {
-							s[(int)(gs->body[i][0] / 0.29)][(int)(gs->body[i][1] / 0.29)] = (i % 2) ? "ÅZ" : "Å~";
+							s[(int)(gs->body[i][0] / discrete_size)][(int)(gs->body[i][1] / discrete_size)] = (i % 2) ? "ÅZ" : "Å~";
 						}
 					}
 				}
@@ -309,16 +309,9 @@ namespace digital_curling {
 				Sleep(50);  // wait for
 			}
 
-			// Extra end
-			/*
-			GameState gs_old = game_process.gs_;
-			game_process.gs_.LastEnd = 1;
-			game_process.gs_.CurEnd = 0;
-			game_process.gs_.ShotNum = 0;
-			for (int i = 0; i < 10; i++) {
-			game_process.gs_.Score[i] = 0;
-			}
-			*/
+			// Exit Game
+			game_process.Exit();
+			cerr << "game_end" << endl;
 
 			return status;
 		}
@@ -343,11 +336,17 @@ namespace digital_curling {
 				return 0;
 			}
 
-			RunMatch(game_process, opt);
+			// Run match(es)
+			for (unsigned int i = 0; i < game_process.repetition_; i++) {
+				if (i > 0) {
+					// Create new log file
+					game_process.log_file_.Create(game_process.player1_, game_process.player2_);
+				}
 
-			// Exit Game
-			game_process.Exit();
-			cerr << "game_end" << endl;
+				// Run a match
+				RunMatch(game_process, opt);
+			}
+
 		}
 	
 		int CuiServer() {

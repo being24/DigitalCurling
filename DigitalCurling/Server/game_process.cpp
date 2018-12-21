@@ -454,7 +454,7 @@ namespace digital_curling
 			else {
 				// Print error message and exit
 				cerr << "Error: invalid command '" << tokens[0] << "'" << endl;
-				//return ERR;
+				return ERR;
 			}
 		}
 		else {

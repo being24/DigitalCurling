@@ -11,6 +11,9 @@ namespace digital_curling {
 		GameLog(const Player* const p1, const Player* const p2);
 		~GameLog();
 
+		// Create new file
+		bool Create(const Player* const p1, const Player* const p2);
+
 		// Write to logfile
 		void Write(std::string message);
 

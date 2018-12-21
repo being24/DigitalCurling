@@ -73,6 +73,7 @@ namespace digital_curling
 
 		GameLog log_file_;     // log file
 
+		unsigned int repetition_;  // times repeat
 		bool extended_end_;     // do extended end if draw
 	};
 
