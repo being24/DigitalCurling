@@ -347,6 +347,7 @@ namespace digital_curling {
 				RunMatch(game_process, opt);
 			}
 
+			return 1;
 		}
 	
 		int CuiServer() {

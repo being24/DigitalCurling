@@ -50,6 +50,8 @@ namespace digital_curling {
 		ofs << "SecondRemTime=" << p2->time_limit_ << endl;
 		ofs << "SecondRandom_1=" << p2->pinfo_.params[0].random_1 << endl;
 		ofs << "SecondRandom_2=" << p2->pinfo_.params[0].random_2 << endl;
+
+		return true;
 	}
 
 	// Write to logfile
