@@ -375,7 +375,6 @@ namespace digital_curling {
 						tokens.push_back(tok);
 					}
 				}
-				for ()
 
 				if (tokens.size() == 0) {
 					continue;
