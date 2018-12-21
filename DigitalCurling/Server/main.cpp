@@ -262,26 +262,8 @@ namespace digital_curling {
 			return game_process;
 		}
 
-		// Simple server for DigitalCurling
-		int SimpleServer(std::string match_name) {
-
-			// Open config file w/ json
-			std::string config_path = "config.json";
-			Options opt;
-			
-			GameProcess *gp = Init(config_path, match_name, opt);
-			GameProcess game_process = *gp;
-
-			// Send "ISREADY" to both players
-			if (!game_process.IsReady(game_process.player1_, opt.timeout_isready)) {
-				cerr << "failed to recieve ISREADY from player 1" << endl;
-				return 0;
-			}
-			if (!game_process.IsReady(game_process.player2_, opt.timeout_isready)) {
-				cerr << "failed to recieve ISREADY from player 2" << endl;
-				return 0;
-			}
-
+		// Run a match
+		int RunMatch(GameProcess &game_process, Options opt) {
 			// Send "NEWGAME" to players
 			game_process.NewGame();
 
@@ -304,13 +286,13 @@ namespace digital_curling {
 					cerr << "==========================================" << endl;
 					Sleep(50);  // wait for
 
-					// Send "GO" to player
+								// Send "GO" to player
 					status = game_process.Go();
 					if (status != GameProcess::BESTSHOT) {
-						goto EXIT_PROCESS;
+						return status;
 					}
-					cerr << "BESTSHOT: (" << 
-						game_process.best_shot_.x << ", " << game_process.best_shot_.y << ", " << 
+					cerr << "BESTSHOT: (" <<
+						game_process.best_shot_.x << ", " << game_process.best_shot_.y << ", " <<
 						game_process.best_shot_.angle << ")" << endl;
 
 					// Simulation
@@ -327,11 +309,6 @@ namespace digital_curling {
 				Sleep(50);  // wait for
 			}
 
-		EXIT_PROCESS:
-			// Exit Game
-			game_process.Exit();
-			cerr << "game_end" << endl;
-
 			// Extra end
 			/*
 			GameState gs_old = game_process.gs_;
@@ -339,11 +316,38 @@ namespace digital_curling {
 			game_process.gs_.CurEnd = 0;
 			game_process.gs_.ShotNum = 0;
 			for (int i = 0; i < 10; i++) {
-				game_process.gs_.Score[i] = 0;
+			game_process.gs_.Score[i] = 0;
 			}
 			*/
 
-			return 1;
+			return status;
+		}
+
+		// Simple game server for DigitalCurling
+		int SimpleServer(std::string match_name) {
+
+			// Open config file w/ json
+			std::string config_path = "config.json";
+			Options opt;
+			
+			GameProcess *gp = Init(config_path, match_name, opt);
+			GameProcess game_process = *gp;
+
+			// Send "ISREADY" to both players
+			if (!game_process.IsReady(game_process.player1_, opt.timeout_isready)) {
+				cerr << "failed to recieve ISREADY from player 1" << endl;
+				return 0;
+			}
+			if (!game_process.IsReady(game_process.player2_, opt.timeout_isready)) {
+				cerr << "failed to recieve ISREADY from player 2" << endl;
+				return 0;
+			}
+
+			RunMatch(game_process, opt);
+
+			// Exit Game
+			game_process.Exit();
+			cerr << "game_end" << endl;
 		}
 	
 		int CuiServer() {
@@ -371,6 +375,7 @@ namespace digital_curling {
 						tokens.push_back(tok);
 					}
 				}
+				for ()
 
 				if (tokens.size() == 0) {
 					continue;

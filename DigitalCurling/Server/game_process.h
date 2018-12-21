@@ -26,10 +26,12 @@ namespace digital_curling
 		~GameProcess();
 
 		enum {
-			ERR,
-			BESTSHOT,
-			CONCEDE,
-			TIMEOUT
+			NORMAL   = 0b00000001,
+			EXTRA    = 0b00000010,
+			ERR      = 0b00000100,
+			BESTSHOT = 0b00001000,
+			CONCEDE  = 0b00010000,
+			TIMEOUT  = 0b00100000
 		};
 
 		const int rule_type_;  // Type of rule (0: standard, 1:mix_doubles) 
