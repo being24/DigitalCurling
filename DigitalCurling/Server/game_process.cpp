@@ -38,7 +38,7 @@ namespace digital_curling
 		sim = new b2simulator::Simulator();
 	}
 
-	GameProcess::GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, bool extended_end, SimulatorParams params) : rule_type_(rule_type), log_file_(p1, p2), extended_end_(extended_end) {
+	GameProcess::GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, unsigned int repetition, bool extended_end, SimulatorParams params) : rule_type_(rule_type), log_file_(p1, p2), repetition_(repetition), extended_end_(extended_end) {
 
 		// Initialize state of the game
 		memset(&gs_, 0, sizeof(GameState));
@@ -324,11 +324,12 @@ namespace digital_curling
 			}
 
 			gs_.ShotNum = 6;
+
+			// Set delivery order
+			SetDeliveryOrder(player1_, rule_type_, time_out);
+			SetDeliveryOrder(player2_, rule_type_, time_out);
 		}
 
-		// Set delivery order
-		SetDeliveryOrder(player1_, rule_type_, time_out);
-		SetDeliveryOrder(player2_, rule_type_, time_out);
 
 		return true;
 	}
@@ -592,16 +593,6 @@ namespace digital_curling
 		sstream << "TOTALSCORE=TOTALSCORE " << score_p1 << " " << score_p2 << endl;
 
 		log_file_.Write(sstream.str());
-
-		// Exit Player Process
-		if (player1_->ExitProcess() == 0) {
-			cerr << "failed to player1_->ExitProcess()" << endl;
-		}
-		if (player1_ != player2_) {
-			if (player2_->ExitProcess() == 0) {
-				cerr << "failed to player2_->ExitProcess()" << endl;
-			}
-		}
 
 		return true;
 	}

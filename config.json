@@ -4,7 +4,7 @@
     "timeout_preend": 5000,
     "output_dcl": true,
     "output_json": false,
-    "output_server_log":  false,
+    "output_server_log":  false
   },
 
   "simulator": {

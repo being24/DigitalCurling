@@ -28,6 +28,13 @@ namespace digital_curling {
 		memset(body, 0x00, 2 * 16 * sizeof(float));
 	}
 
+	void GameState::ClearAll() {
+		ShotNum = 0;
+		CurEnd = 0;
+		memset(Score, 0x00, 10 * sizeof(int));
+		memset(body, 0x00, 2 * 16 * sizeof(float));
+	}
+
 	// Set stone 
 	void GameState::Set(unsigned int num, float x, float y) {
 		assert(num < 16);

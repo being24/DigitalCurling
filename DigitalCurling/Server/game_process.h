@@ -22,7 +22,7 @@ namespace digital_curling
 	class GameProcess {
 	public:
 		GameProcess(Player *p1, Player *p2, int num_ends, int rule_type);
-		GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, bool extend_end, SimulatorParams params);
+		GameProcess(Player *p1, Player *p2, int num_ends, int rule_type, unsigned int repetition, bool extend_end, SimulatorParams params);
 		~GameProcess();
 
 		enum {

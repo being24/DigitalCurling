@@ -34,6 +34,9 @@ namespace digital_curling {
 			// Clear body and Set ShotNum = 0
 			void Clear();
 
+			// Clear all variables
+			void ClearAll();
+
 			// Set stone 
 			void Set(unsigned int num, float x, float y);
 

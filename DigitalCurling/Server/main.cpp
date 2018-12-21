@@ -255,6 +255,7 @@ namespace digital_curling {
 				p2,
 				(int)obj_match["ends"].get<double>(),
 				rule_type,
+				(int)obj_match["repetition"].get<double>(),
 				extended_end,
 				sim_params
 			);
@@ -267,7 +268,7 @@ namespace digital_curling {
 			// Send "NEWGAME" to players
 			game_process.NewGame();
 
-			int status;
+			int status = 0;
 			while (game_process.gs_.CurEnd < game_process.gs_.LastEnd) {
 
 				// Prepare for End
@@ -341,10 +342,23 @@ namespace digital_curling {
 				if (i > 0) {
 					// Create new log file
 					game_process.log_file_.Create(game_process.player1_, game_process.player2_);
+					// Reset GameState
+					game_process.gs_.ClearAll();
 				}
 
 				// Run a match
 				RunMatch(game_process, opt);
+			}
+
+			// Exit Player Process
+			if (game_process.player1_->ExitProcess() == 0) {
+				cerr << "failed to player1_->ExitProcess()" << endl;
+				return  0;
+			}
+			
+			if (game_process.player2_->ExitProcess() == 0) {
+				cerr << "failed to player2_->ExitProcess()" << endl;
+				return 0;
 			}
 
 			return 1;
