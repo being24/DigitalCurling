@@ -12,19 +12,23 @@ Server                          CurlingAI
    | ---------- GAMEINFO ---------> |
    | ---------- PLAYERINFO -------> |
    |                                |
+   | ---------- SETORDER* --------> |
+   | <--------- SETORDER* --------- | *Only for Normal rule (Omitted if num_players == 1)
+   |                                |
    |                                | + REPEATS while a match continues (CurEnd < LastEnd)
-   | ---------- PUTSTONE ---------> | | Only for Mix Doubles rule
-   | <--------- PUTSTONE ---------- | | Only for Mix Doubles rule
+   | ---------- PUTSTONE** -------> | | 
+   | <--------- PUTSTONE** -------- | | **Only for Mix Doubles rule (Omitted if num_players == 1)
    |                                | |
-   | ---------- SETORDER ---------> | | Only for Mix Doubles rule (Omitted if num_players == 1)
-   | <--------- SETORDER ---------- | | Only for Mix Doubles rule
+   | ---------- SETORDER*** ------> | | 
+   | <--------- SETORDER*** ------- | | ***Only for Mix Doubles rule
    |                                | |
-   |                                | | +
-   | ---------- SETSTATE ---------> | | | REPEATS while an end continues (ShotNum < 16)
+   |                                | | + REPEATS while an end continues (ShotNum < 16)
+   | ---------- SETSTATE ---------> | | |
    | ---------- POSITION ---------> | | | 
    | ---------- GO ---------------> | | |
-   | <--------- BESTSHOT ---------- | | | or `CONCEDE` to give up
+   | <--------- BESTSHOT**** ------ | | | ****or `CONCEDE` to give up
    |                                | | +
+   |                                | |
    | ---------- SCORE ------------> | |
    |                                | +
    |                                |
