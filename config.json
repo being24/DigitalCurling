@@ -4,7 +4,8 @@
     "timeout_preend": 5000,
     "output_dcl": true,
     "output_json": false,
-    "output_server_log":  false
+    "output_server_log":  false,
+    "view_board_delay": 3000,
   },
 
   "simulator": {
@@ -16,86 +17,37 @@
     "freeguard_num": 5
   },
 
-  "match_GAT2018_Mix" : {
-    "rule_type": "mix_doubles",
-    "ends": 8,
-    "player_1": {
-      "type": "local",
-      "path": "SampleAI.exe",
-      "timelimit": 219000,
-      "params": [
-        {
-          "random_1": 0.0725,
-          "random_2": 0.2900,
-          "weight_max": 50.000
-        },
-        {
-          "random_1": 0.10875,
-          "random_2": 0.4350,
-          "weight_max": 75.000
-        },
-        null,
-        null
-      ]
-    },
-    "player_2": {
-      "type": "local",
-      "path": "SampleAI.exe",
-      "timelimit": 219000,
-      "params": [
-        {
-          "random_1": 0.0725,
-          "random_2": 0.2900,
-          "weight_max": 50.000
-        },
-        {
-          "random_1": 0.10875,
-          "random_2": 0.4350,
-          "weight_max": 75.000
-        },
-        null,
-        null
-      ]
-    },
-    "extended_end": true,
-    "repetition": 1
-  },
-
-  "match_GAT2018_Normal" : {
+ "match_default": {
     "rule_type": "normal",
-    "ends": 8,
+    "rule_type_all": [ "normal", "mix_doubles" ],
+    "ends": 2,
     "player_1": {
       "type": "local",
       "path": "SampleAI.exe",
+      "md": true,
       "timelimit": 219000,
       "params": [
         {
           "random_1": 0.0725,
           "random_2": 0.2900,
-          "weight_max": 50.000
-        },
-        null,
-        null,
-        null
+          "weight_max": 50
+        }
       ]
     },
     "player_2": {
       "type": "local",
       "path": "SampleAI.exe",
+      "md": true,
       "timelimit": 219000,
       "params": [
         {
           "random_1": 0.0725,
           "random_2": 0.2900,
-          "weight_max": 50.000
-        },
-        null,
-        null,
-        null
+          "weight_max": 55
+        }
       ]
     },
-    "extended_end": true,
-    "repetition": 1
+    "repetition": 4,
+    "extended_end": false
   }
 }
-

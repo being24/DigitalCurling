@@ -244,6 +244,7 @@ namespace digital_curling {
 			// Get simulator parameters
 			SimulatorParams sim_params;
 			sim_params.friction = (float)obj_sim["friction"].get<double>();
+			sim_params.friction_stone = (float)obj_sim["friction_stone"].get<double>();
 			sim_params.random_generator = (obj_sim["rand_type"].get<string>() == "RECTANGULAR") ? b2simulator::RECTANGULAR : b2simulator::POLAR;
 			sim_params.freeguard_num = (unsigned int)obj_sim["freeguard_num"].get<double>();
 

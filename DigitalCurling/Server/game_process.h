@@ -14,6 +14,7 @@ namespace digital_curling
 	// Options for simulator
 	struct SimulatorParams {
 		float friction;
+		float friction_stone;
 		int random_generator;
 		unsigned int freeguard_num;
 	};

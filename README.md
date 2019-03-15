@@ -41,4 +41,37 @@
 
 ### -> Details of each commands on [DCP.md](https://github.com/digitalcurling/DigitalCurling/blob/master/DCP.md)
 
-## Mix Doubles Curling
+## Configulation file (config.json)
+### Overview
+* The server loads setting from `config.json`.
+* `config.json` contains setting parameters for the server, the simulator and a match (Curling AIs)
+* 
+
+### Server settings
+~~~
+  "server": {
+    "timeout_isready": 15000,
+    "timeout_preend": 5000,
+    "output_dcl": true,
+    "output_json": false,
+    "output_server_log":  false,
+    "view_board_delay": 3000,
+  }
+~~~
+
+### Simulator settings
+~~~
+  "simulator": {
+    "friction": 12.009216,
+    "friction_default": 12.009216,
+    "stone_friction": 0.500,
+    "rand_type": "RECTANGULAR",
+    "rand_type_all": ["RECTANGULAR", "POLAR"],
+    "freeguard_num": 5
+  }
+~~~
+
+### Player settings
+~~~
+
+~~~
