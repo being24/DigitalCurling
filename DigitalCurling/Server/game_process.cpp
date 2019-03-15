@@ -58,10 +58,11 @@ namespace digital_curling
 		// Initialize simulator
 		sim = new b2simulator::Simulator(params.friction);
 		sim->random_type_ = params.random_generator;
+		sim->num_freeguard_ = params.freeguard_num;
 
 		// Set up for mix_doubles
 		if (rule_type_ == 1) {
-			sim->num_freeguard_ += 6;
+			sim->num_freeguard_ = 9;
 			sim->area_freeguard_ = b2simulator::IN_PLAYAREA;
 		}
 	}
@@ -90,12 +91,18 @@ namespace digital_curling
 
 		char msg[Player::kBufferSize];
 
+		bool flag = true;  // TODO: delete
+
 		// Prepare recieve thread
 		std::string str;
-		std::future<void> f = std::async(std::launch::async, RecvThread2, std::ref(str), player);
+		std::future<void> f;
+		
+		RECIEVE_START:
+		f = std::async(std::launch::async, RecvThread2, std::ref(str), player);
 		Sleep(100);
 
-		player->Send("ISREADY");
+		if (flag)  // TODO: delete
+			player->Send("ISREADY");
 
 		// Wait for message is ready
 		std::future_status result = f.wait_for(std::chrono::milliseconds(time_out));
@@ -110,8 +117,11 @@ namespace digital_curling
 				return false;
 			}
 			if (tokens[0] != "READYOK") {
-				cerr << "Error: invalid command '" << tokens[0] << "'" << endl;
-				return false;
+				//cerr << "Error: invalid command '" << tokens[0] << "'" << endl;
+				//return false;
+
+				flag = false;  // TODO: delete
+				goto RECIEVE_START;  // TODO delete
 			}
 		}
 		else {
@@ -176,11 +186,12 @@ namespace digital_curling
 		// Wait for message is ready
 		std::future_status result = f.wait_for(std::chrono::milliseconds(time_out));
 
+		std::vector<std::string> tokens;
 		if (result != std::future_status::timeout) {
 			strcpy_s(msg, Player::kBufferSize, str.c_str());
 
 			// split message as token
-			std::vector<std::string> tokens = digital_curling::SpritAsTokens(msg, " ");
+			tokens = digital_curling::SpritAsTokens(msg, " ");
 			if (tokens.size() == 0) {
 				cerr << "Error: empty message" << endl;
 				return false;
@@ -191,16 +202,29 @@ namespace digital_curling
 			}
 		}
 		else {
-			cerr << "Error: timeout for READYOK" << endl;
+			cerr << "Error: timeout for SETORDER" << endl;
 			return false;
 		}
 
-		// TODO: Set Order
+		// Set Order
 		if (rule_type == 0) {
-
+			// set for normal rule
+			// ex 1 2 3 4 1 2 3 4
+			for (int i = 0; i < 4; i++) {
+				p->pinfo_.order[i] = atoi(tokens[i].c_str());
+			}
 		}
 		else {
-
+			// set for Mix Doubles
+			// n n n 0 1 1 1 0 or n n n 1 0 0 0 1
+			if (atoi(tokens[1].c_str()) == 0) {
+				p->pinfo_.order[0] = 0;
+				p->pinfo_.order[1] = 1;
+			}
+			else {
+				p->pinfo_.order[0] = 1;
+				p->pinfo_.order[1] = 0;
+			}
 		}
 
 		return true;
@@ -266,10 +290,10 @@ namespace digital_curling
 			switch (putstone_type)
 			{
 			case 0:
-				gs_.body[0][0] = CENTER_HOUSE.x;
-				gs_.body[0][1] = CENTER_HOUSE.y;
-				gs_.body[1][0] = CENTER_GUARD.x;
-				gs_.body[1][1] = CENTER_GUARD.y;
+				gs_.body[0][0] = CENTER_GUARD.x;
+				gs_.body[0][1] = CENTER_GUARD.y;
+				gs_.body[1][0] = CENTER_HOUSE.x;
+				gs_.body[1][1] = CENTER_HOUSE.y;
 				break;
 			case 1:
 				gs_.body[0][0] = CENTER_HOUSE.x;
@@ -279,10 +303,10 @@ namespace digital_curling
 				gs_.WhiteToMove ^= 1;
 				break;
 			case 2:
-				gs_.body[0][0] = SIDE_HOUSE.x;
-				gs_.body[0][1] = SIDE_HOUSE.y;
-				gs_.body[1][0] = SIDE_GUARD.x;
-				gs_.body[1][1] = SIDE_GUARD.y;
+				gs_.body[0][0] = SIDE_GUARD.x;
+				gs_.body[0][1] = SIDE_GUARD.y;
+				gs_.body[1][0] = SIDE_HOUSE.x;
+				gs_.body[1][1] = SIDE_HOUSE.y;
 				break;
 			case 3:
 				gs_.body[0][0] = SIDE_HOUSE.x;
@@ -323,11 +347,15 @@ namespace digital_curling
 				log_file_.Write(sstream.str());
 			}
 
-			gs_.ShotNum = 6;
-
 			// Set delivery order
-			SetDeliveryOrder(player1_, rule_type_, time_out);
-			SetDeliveryOrder(player2_, rule_type_, time_out);
+			if (player1_->mix_doubles) {
+				SetDeliveryOrder(player1_, rule_type_, time_out);
+			}
+			if (player2_->mix_doubles) {
+				SetDeliveryOrder(player2_, rule_type_, time_out);
+			}
+
+			gs_.ShotNum = 6;
 		}
 
 
@@ -446,10 +474,11 @@ namespace digital_curling
 
 				return BESTSHOT;
 			}
-			else if (tokens[0] == "CONSEED") {
-				// Jump to conseed and exit process if command is 'CONSEED'
+			else if (tokens[0] == "CONCEDE") {
+				// Jump to conseed and exit process if command is 'CONCEDE'
 				// TODO: jump to conseed and exit process
 				log_file_.Write("BESTSHOT=CONCEDE");
+				cerr << "Concede" << endl;
 				return CONCEDE;
 			}
 			else {
@@ -474,6 +503,7 @@ namespace digital_curling
 		//Simulation(&gs_, best_shot_, p->random_x_, &run_shot_, -1);
 		//sim->Simulation(&gs_, best_shot_, p->random_x_, p->random_y_, &run_shot_, nullptr, 0);
 
+		// Get player number for this shot
 		int order_num;
 		if (rule_type_ == 0) {
 			order_num = shotnum_order_table_normal[gs_.ShotNum];
@@ -482,9 +512,16 @@ namespace digital_curling
 			order_num = shotnum_order_table_mix_doubles[gs_.ShotNum];
 		}
 		int shot_num = p->pinfo_.order[order_num];
+
+		// Get parameters of the player
 		float rand_1 = p->pinfo_.params[shot_num].random_1;
 		float rand_2 = p->pinfo_.params[shot_num].random_2;
 		float shot_max = p->pinfo_.params[shot_num].shot_max;
+
+		// Print 
+		cerr << "order = " << p->pinfo_.order[0] << " " << p->pinfo_.order[1] << " " << p->pinfo_.order[2] << " " << p->pinfo_.order[3] << endl;
+		cerr << "(rand1, rand2, shot_max) = ( " << rand_1 << ", " << rand_2 << ", " << shot_max << ")" << endl;
+
 		// Check illegal shot
 		if (best_shot_.y > shot_max) {
 			best_shot_.x = 0.0f;

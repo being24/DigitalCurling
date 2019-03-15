@@ -29,46 +29,15 @@ namespace digital_curling {
 
 		// Server options
 		struct Options {
-			int timeout_isready;
-			int timeout_preend;
-			int timeout_setorder;
-			bool output_dcl;
-			bool output_json;
-			bool output_server_log;
+			int timeout_isready;     // timeout for "ISREADY" command
+			int timeout_preend;      // timeout for "PUTSTONE" command
+			int timeout_setorder;    // timeout for "SETORDER" command
+			bool output_dcl;         // output log (.dcl) or not
+			bool output_json;        // output log (.json) *not implemented
+			bool output_server_log;  // output server log *notimplemented
+
+			int view_board_delay;    // interval for display board [msec]
 		};
-
-		// Initialize player from params via picojson
-		Player* SetPlayer(picojson::object obj) {
-			picojson::array params = obj["params"].get<picojson::array>();
-
-			PlayerInfo pinfo(int(params.size()));
-			int i = 0;
-			for (picojson::array::iterator it = params.begin(); it != params.end(); it++) {
-				pinfo.params[i].random_1 = (float)it->get<picojson::object>()["random_1"].get<double>();
-				pinfo.params[i].random_2 = (float)it->get<picojson::object>()["random_2"].get<double>();
-				pinfo.params[i].shot_max = (float)it->get<picojson::object>()["weight_max"].get<double>();
-				pinfo.order[i] = i;
-				i++;
-			}
-			if (pinfo.nplayers == 1) {
-				for (i = 1; i < 4; i++) {
-					pinfo.params[i].random_1 = pinfo.params[0].random_1;
-					pinfo.params[i].random_2 = pinfo.params[0].random_2;
-					pinfo.params[i].shot_max = pinfo.params[0].shot_max;
-				}
-			}
-			Player *p = new LocalPlayer(
-				obj["path"].get<string>(),
-				(int)obj["timelimit"].get<double>(),
-				pinfo);
-			if (p->InitProcess() == 0) {
-				cerr << "failed to create process for player" << endl;
-				return 0;
-			}
-			p->mix_doubles = obj["md"].get<bool>();
-
-			return p;
-		}
 
 		// Print score board on console
 		void PrintScoreBoard(const GameProcess* const gp) {
@@ -186,6 +155,51 @@ namespace digital_curling {
 			}
 		}
 
+		// Initialize player from params via picojson
+		Player* SetPlayer(picojson::object obj) {
+			picojson::array params = obj["params"].get<picojson::array>();
+
+			PlayerInfo pinfo(int(params.size()));
+			
+			int i = 0;
+
+			// Set player parameters
+			for (picojson::array::iterator it = params.begin(); it != params.end(); it++) {
+				pinfo.params[i].random_1 = (float)it->get<picojson::object>()["random_1"].get<double>();
+				pinfo.params[i].random_2 = (float)it->get<picojson::object>()["random_2"].get<double>();
+				pinfo.params[i].shot_max = (float)it->get<picojson::object>()["weight_max"].get<double>();
+				pinfo.order[i] = i;
+				i++;
+			}
+
+			// Fill rest of players
+			for (i = pinfo.nplayers; i < 4; i++) {
+				pinfo.params[i].random_1 = pinfo.params[0].random_1;
+				pinfo.params[i].random_2 = pinfo.params[0].random_2;
+				pinfo.params[i].shot_max = pinfo.params[0].shot_max;
+			}
+
+			// Initialize player as LocalPlayer
+			Player *p = new LocalPlayer(
+				obj["path"].get<string>(),
+				(int)obj["timelimit"].get<double>(),
+				pinfo);
+			if (p->InitProcess() == 0) {
+				cerr << "failed to create process for player" << endl;
+				return 0;
+			}
+			p->mix_doubles = obj["md"].get<bool>();
+
+			/*  for debug
+			for (int i = 0; i < 4; i++) {
+				cerr << "params[" << i << "] = " << pinfo.params[i].random_1 << " " << pinfo.params[i].random_2 << " " << pinfo.params[i].shot_max << endl;
+			}
+			cerr << "order = " << p->pinfo_.order[0] << " " << p->pinfo_.order[1] << " " << p->pinfo_.order[2] << " " << p->pinfo_.order[3] << endl;
+			*/
+
+			return p;
+		}
+
 		// Load config and initialize game process
 		GameProcess* Init(std::string config_path, std::string match_name, Options &options) {
 			std::ifstream config_file(config_path);
@@ -225,6 +239,7 @@ namespace digital_curling {
 			options.output_dcl = obj_server["output_dcl"].get<bool>();
 			options.output_json = obj_server["output_json"].get<bool>();
 			options.output_server_log = obj_server["output_server_log"].get<bool>();
+			options.view_board_delay = (int)obj_server["view_board_delay"].get<double>();
 
 			// Get simulator parameters
 			SimulatorParams sim_params;
@@ -285,11 +300,12 @@ namespace digital_curling {
 					PrintBoard(&game_process.gs_);
 					PrintScoreBoard(&game_process);
 					cerr << "==========================================" << endl;
-					Sleep(50);  // wait for
+					Sleep(opt.view_board_delay + 50);  // wait for
 
 								// Send "GO" to player
 					status = game_process.Go();
 					if (status != GameProcess::BESTSHOT) {
+						cerr << "status = " << status << endl;
 						return status;
 					}
 					cerr << "BESTSHOT: (" <<
@@ -428,9 +444,6 @@ namespace digital_curling {
 
 int main(void)
 {
-	// run single game
-	//digital_curling::server::SimpleServer();
-
 	// run cui server
 	digital_curling::server::CuiServer();
 

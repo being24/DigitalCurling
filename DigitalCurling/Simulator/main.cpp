@@ -90,7 +90,7 @@ void score_test() {
 	gs.body[2][1] = kTeeY + 5 * kStoneR;
 	gs.ShotNum = 3;
 
-	cout << "Score = " << b2simulator::GetScore(&gs) << endl;
+	cout << "Score = " << b2simulator::Simulator::GetScore(&gs) << endl;
 }
 
 void create_shot_test() {
@@ -177,9 +177,9 @@ void convert_test() {
 	Simulator sim;
 	sim.CreateShot(ShotPos(kCenterX, kTeeY, false), &vecr);
 
-	vecp = b2simulator::ConvertVec(vecr);
+	vecp = vecr.Convert();
 
-	vecrp = b2simulator::ConvertVec(vecp);
+	vecrp = vecp.Convert();
 
 	cout << "hoge" << endl;
 }

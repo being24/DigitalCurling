@@ -23,7 +23,7 @@ namespace digital_curling
 	}
 	PlayerInfo::PlayerInfo(unsigned int num_players) {
 		nplayers = num_players;
-		for (unsigned int i = 0; i < nplayers; i++) {
+		for (unsigned int i = 0; i < 4; i++) {
 			params[i].random_1 = 0.0f;
 			params[i].random_2 = 0.0f;
 			params[i].shot_max = 0.0f;

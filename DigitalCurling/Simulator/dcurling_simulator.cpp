@@ -36,14 +36,6 @@ namespace digital_curling {
 		constexpr float kStandardAngle   = 3.14f;
 		//constexpr float kForceVerticalBase = kStandardAngle * kFriction;
 
-		// Constant values for Rink
-		constexpr float kPlayAreaXLeft   = 0.000f + kStoneR;
-		constexpr float kPlayAreaXRight  = kSideX - kStoneR;
-		constexpr float kPlayAreaYTop    = 3.050f + kStoneR;
-		constexpr float kPlayAreaYBottom = kHogY - kStoneR;
-		constexpr float kRinkYTop        = 0.000f + kStoneR;
-		constexpr float kRinkYBottom     = 3.050f + kRinkHeight - kStoneR;
-
 		// Constant values for simulation
 		constexpr int kVelocityIterations = 10;        // Iteration?
 		constexpr int kPositionIterations = 10;        // Iteration?
@@ -142,6 +134,11 @@ namespace digital_curling {
 			}
 
 			return ret;
+		}
+		int GetStoneArea(ShotPos pos) {
+			b2Vec2 pos_b2vec(pos.x, pos.y);
+
+			return GetStoneArea(pos_b2vec);
 		}
 
 		// Add friction to single stone
@@ -315,43 +312,6 @@ namespace digital_curling {
 			return vec_ret;
 		}
 
-		// Return score of second (which has last shot in this end)
-		int GetScore(const GameState* const game_state) {
-
-			struct Stone {
-				unsigned int shot_num = 0;   // Number of shot
-				float distance = 9999.0f;    // Distance from center of House
-			} stone[16];
-
-			// Get Number and Distance
-			for (unsigned int i = 0; i < game_state->ShotNum; i++) {
-				stone[i].shot_num = i;
-				stone[i].distance = GetDistance(
-					game_state->body[i][0] - kCenterX, 
-					game_state->body[i][1] - kTeeY);
-			}
-
-			// Sort by distance
-			std::sort(stone, stone + game_state->ShotNum, 
-				[](const Stone& s1, const Stone s2) {return s1.distance < s2.distance; });
-
-			// Calculate score
-			int score = 0;                    // Score
-			int mod = stone[0].shot_num % 2;  // Player which has no.1 stone
-			int base = (mod == 0) ? -1 : 1;   // Score per 1 stone
-			for (unsigned int i = 0; i < game_state->ShotNum; i++) {
-				if ((stone[i].distance < kHouseR + kStoneR) &&
-					(stone[i].shot_num % 2 == mod)) {
-					score += base;
-				}
-				else {
-					break;
-				}
-			}
-			
-			return score;
-		}
-
 		// Update game_state from board
 		void UpdateState(const Board &board, GameState* const game_state) {
 			// Update ShotNum (ShotNum can be 16, not reset to 0)
@@ -373,7 +333,7 @@ namespace digital_curling {
 			// Update Score if ShotNum == 16
 			if (game_state->ShotNum == 16) {
 				// Calculate Socre
-				int score = GetScore(game_state);
+				int score = Simulator::GetScore(game_state);
 				game_state->Score[game_state->CurEnd] = (game_state->WhiteToMove) ? -score : score;
 				// Update WhiteToMove
 				game_state->WhiteToMove ^= (score <= 0);
@@ -382,24 +342,6 @@ namespace digital_curling {
 				// Update WhiteToMove
 				game_state->WhiteToMove ^= true;
 			}
-		}
-
-		ShotVecP ConvertVec(ShotVec vec_rect) {
-			ShotVecP vec_polar;
-			
-			vec_polar.v = GetDistance(vec_rect.x, vec_rect.y);  // v
-			vec_polar.theta = atan2(vec_rect.x, vec_rect.y);  // theta
-
-			return vec_polar;
-		}
-
-		ShotVec ConvertVec(ShotVecP vec_polar) {
-			ShotVec vec_rect;
-
-			vec_rect.x = vec_polar.v * sin(vec_polar.theta);
-			vec_rect.y = vec_polar.v * cos(vec_polar.theta);
-
-			return vec_rect;
 		}
 
 		/*** Member functions of class 'Simulator' ***/
@@ -419,6 +361,17 @@ namespace digital_curling {
 			area_freeguard_(IN_FREEGUARD),
 			random_type_(RECTANGULAR),
 			friction_(friction) {
+
+			// initialize shot_table
+			init_shot_table();
+		}
+
+		Simulator::Simulator(float friction, float friction_stone) :
+			num_freeguard_(3),
+			area_freeguard_(IN_FREEGUARD),
+			random_type_(RECTANGULAR),
+			friction_(friction),
+			friction_stone(friction_stone){
 
 			// initialize shot_table
 			init_shot_table();
@@ -542,8 +495,8 @@ namespace digital_curling {
 					StY = 6.71f + ((4.0f - Power) * 0.61f);
 				}
 				else if (Power > 10.0f) {
-					if (Power > 16) {
-						Power = 16;
+					if (Power > 256) {
+						Power = 256;
 					}
 					StY = 3.05f + ((10.0f - Power) * 1.52f);
 				}
@@ -647,16 +600,16 @@ namespace digital_curling {
 				CreateShot(tee_pos, &tee_shot);
 				CreateShot(tee_pos + ShotPos(r1, r2, vec->angle), &add_rand_tee_shot);
 
-				// Add random to vec
+				// Add random to vecCon
 				*vec += tee_shot - add_rand_tee_shot;
 			} 
 			// for polar coordinate system
 			else if (random_type_ == POLAR) {
 				ShotVecP vec_polar;
-				vec_polar = ConvertVec(*vec);
+				vec_polar = vec->Convert();
 				vec_polar.v += r1;
 				vec_polar.theta += r2;
-				*vec = ConvertVec(vec_polar);
+				*vec = vec_polar.Convert();
 			}
 		}
 
@@ -697,5 +650,83 @@ namespace digital_curling {
 
 			return 0;
 		}
+
+		// Return score of second (which has last shot in this end)
+		int Simulator::GetScore(const GameState* const game_state) {
+
+			struct Stone {
+				unsigned int shot_num = 0;   // Number of shot
+				float distance = 9999.0f;    // Distance from center of House
+			} stone[16];
+
+			// Get Number and Distance
+			for (unsigned int i = 0; i < game_state->ShotNum; i++) {
+				stone[i].shot_num = i;
+				stone[i].distance = GetDistance(
+					game_state->body[i][0] - kCenterX,
+					game_state->body[i][1] - kTeeY);
+			}
+
+			// Sort by distance
+			std::sort(stone, stone + game_state->ShotNum,
+				[](const Stone& s1, const Stone s2) {return s1.distance < s2.distance; });
+
+			// Calculate score
+			int score = 0;                    // Score
+			int mod = stone[0].shot_num % 2;  // Player which has no.1 stone
+			int base = (mod == 0) ? -1 : 1;   // Score per 1 stone
+			for (unsigned int i = 0; i < game_state->ShotNum; i++) {
+				if ((stone[i].distance < kHouseR + kStoneR) &&
+					(stone[i].shot_num % 2 == mod)) {
+					score += base;
+				}
+				else {
+					break;
+				}
+			}
+
+			return score;
+		}
+
+	}
+
+	/*
+	ShotVecP ConvertVec(ShotVec vec_rect) {
+		ShotVecP vec_polar;
+
+		vec_polar.v = b2simulator::GetDistance(vec_rect.x, vec_rect.y);  // v
+		vec_polar.theta = atan2(vec_rect.x, vec_rect.y);  // theta
+
+		return vec_polar;
+	}
+
+	ShotVec ConvertVec(ShotVecP vec_polar) {
+		ShotVec vec_rect;
+
+		vec_rect.x = vec_polar.v * sin(vec_polar.theta);
+		vec_rect.y = vec_polar.v * cos(vec_polar.theta);
+
+		return vec_rect;
+	}
+	*/
+
+	// Convert to ShotVecP
+	ShotVecP ShotVec::Convert() {
+		ShotVecP vec_polar;
+
+		vec_polar.v = b2simulator::GetDistance(this->x, this->y);  // v
+		vec_polar.theta = atan2(this->x, this->y);  // theta
+
+		return vec_polar;
+	}
+
+	// Convert to ShotVec
+	ShotVec ShotVecP::Convert() {
+		ShotVec vec_rect;
+
+		vec_rect.x = this->v * sin(this->theta);
+		vec_rect.y = this->v * cos(this->theta);
+
+		return vec_rect;
 	}
 }
