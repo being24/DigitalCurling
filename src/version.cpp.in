@@ -1,0 +1,25 @@
+﻿#include "digital_curling/detail/version.hpp"
+
+namespace digital_curling {
+
+std::string GetVersion()
+{
+    return "@digital_curling_VERSION@";
+}
+
+std::uint32_t GetVersionMajor()
+{
+    return @digital_curling_VERSION_MAJOR@;
+}
+
+std::uint32_t GetVersionMinor()
+{
+    return @digital_curling_VERSION_MINOR@;
+}
+
+std::uint32_t GetVersionPatch()
+{
+    return @digital_curling_VERSION_PATCH@;
+}
+
+} // namespace digital_curling

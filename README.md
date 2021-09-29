@@ -1,9 +1,69 @@
-# DigitalCurling
+# Digital Curling ver.3
 
-## OverView
+Digital Curling is a system which simulates curling games and a platform for creating curling AI.
 
-- Digital Curling is a system which simulates curling games with [Box2D](https://box2d.org/).
+## Feature
 
-## Description
+This repository provides...
 
-工事中
+- Library for developing a curling AI
+- TCP/IP server for playing a curling match
+
+### Curling Simulation
+
+- Using a new physics simulator
+- Currently normal rule (non mix-doubles rule) is only supported.
+
+### Language
+
+- C++17
+
+## Building
+
+1. Clone this repository
+   - :warning: To clone submodules together, use `git clone --recursive <URL>` instead of `git clone <URL>`
+1. Install [Boost](https://www.boost.org/)
+1. Set the environment variable `BOOST_ROOT` to the directory in which Boost installed
+1. Install [CMake](https://cmake.org/)
+1. Ensure CMake is in the user `PATH`
+1. Execute the following commands
+
+```
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBOX2D_BUILD_TESTBED=OFF ..
+cmake --build . --config RelWithDebInfo
+```
+
+### Installation
+
+Currently not supported
+
+## Examples of creating a curling AI
+
+Under construction
+
+## Playing a curling match
+
+- Build the server. See [here](#building).
+- Make a server config file. See [here](#server-config-file).
+- Execute a command such as the following (the command is slightly different for each platform). The first argument is the path to a config file. In this example, the name of the config file is `config.json`.
+
+```
+./digital_curling__server config.json
+```
+
+### Server config file
+
+```json
+{
+    "port": [10000, 10001]
+}
+```
+
+The detail of the config file is under construction.
+
+
+## GUI
+
+Under construction
