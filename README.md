@@ -1,77 +1,69 @@
-# DigitalCurling
+# Digital Curling ver.3
 
-## OverView
- * Digital Curling is a system which simulates a curling game /w Box2D (box2d.org).
- * This system enables competitive play between two Curling AIs.
- * More details on official site (http://minerva.cs.uec.ac.jp/curling/wiki.cgi).
+Digital Curling is a system which simulates curling games and a platform for creating curling AI.
 
-## Description
-### Simulator
-* Simulates the motion of stones with 2D physics simulator (Box2D).
-* Applies normal random number to initial velocity vector of a shot.
-* Class *Simulator* provides functions for simulation and creating shots. 
+## Feature
+
+This repository provides...
+
+- Library for developing a curling AI
+- TCP/IP server for playing a curling match
+
+### Curling Simulation
+
+- Using a new physics simulator
+- Currently normal rule (non mix-doubles rule) is only supported.
+
+### Language
+
+- C++17
+
+## Building
+
+1. Clone this repository
+   - :warning: To clone submodules together, use `git clone --recursive <URL>` instead of `git clone <URL>`
+1. Install [Boost](https://www.boost.org/)
+1. Set the environment variable `BOOST_ROOT` to the directory in which Boost installed
+1. Install [CMake](https://cmake.org/)
+1. Ensure CMake is in the user `PATH`
+1. Execute the following commands
+
+```
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBOX2D_BUILD_TESTBED=OFF ..
+cmake --build . --config RelWithDebInfo
+```
+
+### Installation
+
+Currently not supported
+
+## Examples of creating a curling AI
+
+Under construction
+
+## Playing a curling match
+
+- Build the server. See [here](#building).
+- Make a server config file. See [here](#server-config-file).
+- Execute a command such as the following (the command is slightly different for each platform). The first argument is the path to a config file. In this example, the name of the config file is `config.json`.
+
+```
+./digital_curling__server config.json
+```
+
+### Server config file
+
+```json
+{
+    "port": [10000, 10001]
+}
+```
+
+The detail of the config file is under construction.
 
 
-### Server
-* Controls the processe of Digital Curling game.
-* Plays game with normal rule or Mix Doubles rule.
-* Communicates with Curling AIs on local.
-* Communicates with Curling AIs with Digital Curling Protocol (DCP).
-* Outputs log file as DCL (.dcl), which can be replayed with DigitalCurling Client.
+## GUI
 
-### SampleAI
-* A sample for Curling AI.
-* Uses simulation, creating shots, constant values from the simulator.
-
-## Build
-* Open *DigitalCurling.sln*.
-* Build project *Simulator* at first (*Solution Explorer* -> *Simulator* -> *'build project'*).
-* Build project *Server* or *SampleAI*.
-   * You need to add *Simmulator.lib* to additional dependancies of each project.
-
-## Run
-* Run `Server.exe` with console.
-* `help` or `h` to show all commands.
-* `run` : run single match 'match_default' from  *config.json*.
-
-## Digital Curling Protocol (DCP)
-### Overview
-* DCP provides command for communication between the server and Curling AIs.
-* Each message contains a command and arguments such as `COMMAND arg1 arg2...`.
-
-### -> Details of each commands on [DCP.md](https://github.com/digitalcurling/DigitalCurling/blob/master/DCP.md)
-
-## Configulation file (config.json)
-### Overview
-* The server loads setting from `config.json`.
-* `config.json` contains setting parameters for the server, the simulator and a match (Curling AIs)
-* 
-
-### Server settings
-~~~
-  "server": {
-    "timeout_isready": 15000,
-    "timeout_preend": 5000,
-    "output_dcl": true,
-    "output_json": false,
-    "output_server_log":  false,
-    "view_board_delay": 3000,
-  }
-~~~
-
-### Simulator settings
-~~~
-  "simulator": {
-    "friction": 12.009216,
-    "friction_default": 12.009216,
-    "stone_friction": 0.500,
-    "rand_type": "RECTANGULAR",
-    "rand_type_all": ["RECTANGULAR", "POLAR"],
-    "freeguard_num": 5
-  }
-~~~
-
-### Player settings
-~~~
-
-~~~
+Under construction
