@@ -60,11 +60,11 @@ void Channel::Leave(size_t client_id)
     assert(client_id < clients_.size());
     clients_[client_id].session.reset();
 
-    Log::Debug(Buf() << "Client " << client_id << " was left from channel.");
+    Log::Debug((Buf() << "Client " << client_id << " was left from channel.").str());
 
     if (clients_[client_id].state != Client::State::kGameOver) {
         // 正常なタイミングでの終了ではない
-        Log::Error(Buf() << "Client " << client_id << " was left from channel at inappropriate time.");
+        Log::Error((Buf() << "Client " << client_id << " was left from channel at inappropriate time.").str());
         StopServer();
     }
     // 正常なタイミングの終了の場合，これ以上することは無い．
@@ -74,7 +74,7 @@ void Channel::StartContact(size_t client_id)
 {
     assert(clients_.at(client_id).state == Client::State::kBeforeContact);
 
-    Log::Debug(Buf() << "Start contact with client " << client_id);
+    Log::Debug((Buf() << "Start contact with client " << client_id).str());
 
     clients_.at(client_id).state = Client::State::kVersionCheck;
 
@@ -214,7 +214,7 @@ void Channel::OnRead(size_t client_id, std::string && input_message, std::chrono
 
             case Client::State::kGameOver: {
                 // nothing to do
-                Log::Warn(Buf() << "client " << client_id << "'s message was ignored.");
+                Log::Warn((Buf() << "client " << client_id << "'s message was ignored.").str());
                 break;
             }
 
@@ -303,7 +303,7 @@ void Channel::OnInputTimeout(size_t client_id)
 {
     switch (clients_.at(client_id).state) {
         case Client::State::kMyTurn: {
-            Log::Debug(Buf() << "Client " << client_id << " timed out.");
+            Log::Debug((Buf() << "Client " << client_id << " timed out.").str());
             // 制限時間切れにより負け．
             clients_[client_id].remaining_time = std::chrono::seconds(0);
             normal_game::Move move = normal_game::move::TimeLimit();
@@ -314,7 +314,7 @@ void Channel::OnInputTimeout(size_t client_id)
         }
 
         default:
-            Log::Error(Buf() << "Client " << client_id << " timed out at an inappropriate time.");
+            Log::Error((Buf() << "Client " << client_id << " timed out at an inappropriate time.").str());
             StopServer();
             break;
     }
@@ -336,7 +336,7 @@ void Channel::Update(normal_game::Move & move)
 {
     auto current_client = ToClientId(game_state_.GetCurrentTeam());
     if (clients_[current_client].remaining_time.count() <= 0) {
-        Log::Debug(Buf() << "Client " << current_client << " lost the game because of the time limit.");
+        Log::Debug((Buf() << "Client " << current_client << " lost the game because of the time limit.").str());
         move = normal_game::move::TimeLimit();
     }
 
@@ -447,7 +447,7 @@ void TCPSession::Stop()
     input_deadline_.cancel();
     non_empty_output_queue_.cancel();
 
-    Log::Debug(Buf() << "Client " << client_id_ << "'s session was stopped.");
+    Log::Debug((Buf() << "Client " << client_id_ << "'s session was stopped.").str());
 }
 
 bool TCPSession::IsStopped() const
@@ -467,7 +467,7 @@ void TCPSession::ReadLine()
 
             if (error) {
                 // このエラーはクライアントが正常に接続を解除した際にも呼ばれる
-                Log::Debug(Buf() << "error in client " << client_id_ << " read line. " << error.message());
+                Log::Debug((Buf() << "error in client " << client_id_ << " read line. " << error.message()).str());
                 channel_.Leave(client_id_);
                 Stop();
                 return;
@@ -496,7 +496,7 @@ void TCPSession::ReadLine()
                 } else {
                     buf << "(too long (size=" << msg.size() << "))";
                 }
-                Log::Trace(buf);
+                Log::Trace(buf.str());
             }
 
             channel_.OnRead(client_id_, std::move(msg), elapsed_from_output);
@@ -535,7 +535,7 @@ void TCPSession::WriteLine()
 
             if (error) {
                 // このエラーはクライアントが正常に接続を解除した際にも呼ばれる
-                Log::Error(Buf() << "error in client " << client_id_ << " write line. " << error.message());
+                Log::Error((Buf() << "error in client " << client_id_ << " write line. " << error.message()).str());
                 channel_.Leave(client_id_);
                 Stop();
                 return;
@@ -553,7 +553,7 @@ void TCPSession::WriteLine()
 
             {
                 std::string_view str = std::string_view(message.message).substr(0, message.message.size() - 1);
-                Log::Trace(Buf() << "[out] client=" << client_id_ << ", message=" << str);
+                Log::Trace((Buf() << "[out] client=" << client_id_ << ", message=" << str).str());
             }
 
             output_queue_.pop_front();
