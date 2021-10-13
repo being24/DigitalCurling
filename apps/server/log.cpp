@@ -5,6 +5,16 @@
 
 namespace digital_curling::server {
 
+Log::Buffer::Buffer(std::string_view prefix)
+{
+    buffer_ << prefix;
+}
+
+Log::Buffer::~Buffer()
+{
+    PrintLine(buffer_.str());
+}
+
 Log::Log(std::ofstream && file)
     : file_(std::move(file))
 {
@@ -17,38 +27,38 @@ Log::~Log()
     instance_ = nullptr;
 }
 
-void Log::Trace(std::string_view message)
+Log::Buffer Log::Trace()
 {
-    Log::Print("[trace] ", message);
+    return Buffer("[trace] ");
 }
 
-void Log::Debug(std::string_view message)
+Log::Buffer Log::Debug()
 {
-    Log::Print("[debug] ", message);
+    return Buffer("[debug] ");
 }
 
-void Log::Info(std::string_view message)
+Log::Buffer Log::Info()
 {
-    Log::Print("[info] ", message);
+    return Buffer("[info] ");
 }
 
-void Log::Warn(std::string_view message)
+Log::Buffer Log::Warn()
 {
-    Log::Print("[warn] ", message);
+    return Buffer("[warn] ");
 }
 
-void Log::Error(std::string_view message)
+Log::Buffer Log::Error()
 {
-    Log::Print("[error] ", message);
+    return Buffer("[error] ");
 }
 
-void Log::Print(char const * prefix, std::string_view message)
+void Log::PrintLine(std::string && message)
 {
     assert(instance_);
     std::lock_guard guard(instance_->mutex_);
-    instance_->file_ << prefix << message << '\n';
+    instance_->file_ << message << '\n';
     instance_->file_.flush();
-    std::cout << prefix << message << std::endl;
+    std::cout << std::move(message) << std::endl;
 }
 
 }

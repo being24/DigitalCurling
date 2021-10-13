@@ -14,6 +14,23 @@ namespace digital_curling::server {
 /// </summary>
 class Log {
 public:
+    class Buffer {
+    public:
+        Buffer(std::string_view prefix);
+        Buffer(Buffer const&) = delete;
+        Buffer & operator = (Buffer const&) = delete;
+        ~Buffer();
+
+        template <class T>
+        Buffer & operator << (T&& value)
+        {
+            buffer_ << std::forward<T>(value);
+            return *this;
+        }
+
+    private:
+        std::ostringstream buffer_;
+    };
 
     Log(std::ofstream && file);
     Log(Log const&) = delete;
@@ -23,38 +40,38 @@ public:
     /// <summary>
     /// 最も詳細なログ．主に通信内容の表示に用いる．
     /// </summary>
-    /// <param name="message">出力されるメッセージ</param>
-    static void Trace(std::string_view message);
+    /// <returns>ログ出力先バッファ</returns>
+    static Buffer Trace();
 
     /// <summary>
     /// デバッグ用のログ．主にサーバーの状況を表示する．
     /// </summary>
-    /// <param name="message">出力されるメッセージ</param>
-    static void Debug(std::string_view message);
+    /// <returns>ログ出力先バッファ</returns>
+    static Buffer Debug();
 
     /// <summary>
     /// GUIによるログ再生ではこのタイプのログを参照する．
     /// </summary>
-    /// <param name="message">出力されるメッセージ</param>
-    static void Info(std::string_view message);
+    /// <returns>ログ出力先バッファ</returns>
+    static Buffer Info();
 
     /// <summary>
     /// サーバーを終了する程では無い，異常な動作を検出した場合に使う．
     /// </summary>
-    /// <param name="message">出力されるメッセージ</param>
-    static void Warn(std::string_view message);
+    /// <returns>ログ出力先バッファ</returns>
+    static Buffer Warn();
 
     /// <summary>
     /// 通信などにエラーが発生した場合用いる．このメッセージを出したらサーバーは速やかに終了する．
     /// </summary>
-    /// <param name="message">出力されるメッセージ</param>
-    static void Error(std::string_view message);
+    /// <returns>ログ出力先バッファ</returns>
+    static Buffer Error();
 
 private:
     std::ofstream file_;
     std::mutex mutex_;
     static inline Log * instance_ = nullptr;
-    static void Print(char const * prefix, std::string_view message);
+    static void PrintLine(std::string &&);
 };
 
 
