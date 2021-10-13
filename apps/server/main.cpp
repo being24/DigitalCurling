@@ -10,7 +10,6 @@ using boost::asio::ip::tcp;
 using namespace digital_curling;
 using digital_curling::server::Log;
 using nlohmann::json;
-using Buf = std::ostringstream;
 
 int main(int argc, char* const argv[])
 {
@@ -41,7 +40,7 @@ int main(int argc, char* const argv[])
         std::ofstream file;
         for (int count = 0; !file.is_open(); ++count) {
             // ゲームIDを作成
-            Buf game_id_buf;
+            std::ostringstream game_id_buf;
             game_id_buf << date_time << '_' << std::setfill('0') << std::right << std::setw(3) << count;
             server_setting.game_id = game_id_buf.str();
 
@@ -75,8 +74,8 @@ int main(int argc, char* const argv[])
     }
 
     try {
-        Log::Debug((Buf() << "log file path: " << std::filesystem::absolute(file_name)).str());
-        Log::Debug((Buf() << "game id: " << server_setting.game_id).str());
+        Log::Debug() << "log file path: " << std::filesystem::absolute(file_name);
+        Log::Debug() << "game id: " << server_setting.game_id;
 
         // TODO 起動設定ファイルを読み込む．
         std::ifstream config_file(argv[1]);
@@ -110,19 +109,19 @@ int main(int argc, char* const argv[])
         boost::asio::io_context io_context;
 
         tcp::endpoint listen_endpoint0(tcp::v4(), port0);
-        Log::Debug((Buf() << "port 0: " << listen_endpoint0.port()).str());
+        Log::Debug() << "port 0: " << listen_endpoint0.port();
 
         tcp::endpoint listen_endpoint1(tcp::v4(), port1);
-        Log::Debug((Buf() << "port 1: " << listen_endpoint1.port()).str());
+        Log::Debug() << "port 1: " << listen_endpoint1.port();
 
         server::Server s(io_context, listen_endpoint0, listen_endpoint1, server_setting, game_setting, *simulator_setting);
 
-        Log::Debug("Server started.");
+        Log::Debug() << "Server started.";
         io_context.run();
-        Log::Debug("Server terminated successfully.");
+        Log::Debug() << "Server terminated successfully.";
 
     } catch (std::exception & e) {
-        Log::Error(e.what());
+        Log::Error() << e.what();
         return 1;
     }
 
