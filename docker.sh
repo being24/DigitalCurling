@@ -40,13 +40,16 @@ cmake
 
 # リポジトリのclone
 git clone --recursive https://github.com/being24/DigitalCurling.git
-git submodule update --init --recursive
+cd DigitalCurling
 
 # ブランチの切り替え
 git checkout develop
 
+# サブモジュールのダウンロード
+git submodule update --init --recursive
+
+
 # デジタルカーリングのビルド
-cd ./DigitalCurling
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBOX2D_BUILD_TESTBED=OFF ..
