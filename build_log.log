@@ -1,4 +1,4 @@
-root@9c87d39c3bcb:/DigitalCurling/build# cmake --build . --config RelWithDebInfo
+root@f50a46bb30bc:/DigitalCurling/build# cmake --build . --config RelWithDebInfo
 [  1%] Building CXX object extern/box2d/src/CMakeFiles/box2d.dir/collision/b2_broad_phase.cpp.o
 [  2%] Building CXX object extern/box2d/src/CMakeFiles/box2d.dir/collision/b2_chain_shape.cpp.o
 [  4%] Building CXX object extern/box2d/src/CMakeFiles/box2d.dir/collision/b2_circle_shape.cpp.o
@@ -63,70 +63,18 @@ root@9c87d39c3bcb:/DigitalCurling/build# cmake --build . --config RelWithDebInfo
 [ 78%] Building CXX object apps/server/CMakeFiles/digital_curling__server.dir/log.cpp.o
 [ 80%] Building CXX object apps/server/CMakeFiles/digital_curling__server.dir/main.cpp.o
 /DigitalCurling/apps/server/main.cpp: In function 'int main(int, char* const*)':
-/DigitalCurling/apps/server/main.cpp:77:101: error: no matching function for call to 'digital_curling::server::Log::Debug(std::basic_ostream<char>&)'
-   77 |         Log::Debug(std::ostringstream() << "log file path: " << std::filesystem::absolute(file_name));
-      |                                                                                                     ^
-In file included from /DigitalCurling/apps/server/main.cpp:7:
-/DigitalCurling/apps/server/log.hpp:38:17: note: candidate: 'static void digital_curling::server::Log::Debug(std::string_view)'
-   38 |     static void Debug(std::string_view message);
-      |                 ^~~~~
-/DigitalCurling/apps/server/log.hpp:38:40: note:   no known conversion for argument 1 from 'std::basic_ostream<char>' to 'std::string_view' {aka 'std::basic_string_view<char>'}
-   38 |     static void Debug(std::string_view message);
-      |                       ~~~~~~~~~~~~~~~~~^~~~~~~
-/DigitalCurling/apps/server/log.hpp:40:17: note: candidate: 'static void digital_curling::server::Log::Debug(const ostringstream&)'
-   40 |     static void Debug(std::ostringstream const& message)
-      |                 ^~~~~
-/DigitalCurling/apps/server/log.hpp:40:49: note:   no known conversion for argument 1 from 'std::basic_ostream<char>' to 'const ostringstream&' {aka 'const std::__cxx11::basic_ostringstream<char>&'}
-   40 |     static void Debug(std::ostringstream const& message)
-      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-/DigitalCurling/apps/server/main.cpp:78:81: error: no matching function for call to 'digital_curling::server::Log::Debug(std::basic_ostream<char>&)'
-   78 |         Log::Debug(std::ostringstream() << "game id: " << server_setting.game_id);
-      |                                                                                 ^
-In file included from /DigitalCurling/apps/server/main.cpp:7:
-/DigitalCurling/apps/server/log.hpp:38:17: note: candidate: 'static void digital_curling::server::Log::Debug(std::string_view)'
-   38 |     static void Debug(std::string_view message);
-      |                 ^~~~~
-/DigitalCurling/apps/server/log.hpp:38:40: note:   no known conversion for argument 1 from 'std::basic_ostream<char>' to 'std::string_view' {aka 'std::basic_string_view<char>'}
-   38 |     static void Debug(std::string_view message);
-      |                       ~~~~~~~~~~~~~~~~~^~~~~~~
-/DigitalCurling/apps/server/log.hpp:40:17: note: candidate: 'static void digital_curling::server::Log::Debug(const ostringstream&)'
-   40 |     static void Debug(std::ostringstream const& message)
-      |                 ^~~~~
-/DigitalCurling/apps/server/log.hpp:40:49: note:   no known conversion for argument 1 from 'std::basic_ostream<char>' to 'const ostringstream&' {aka 'const std::__cxx11::basic_ostringstream<char>&'}
-   40 |     static void Debug(std::ostringstream const& message)
-      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-/DigitalCurling/apps/server/main.cpp:112:81: error: no matching function for call to 'digital_curling::server::Log::Debug(std::basic_ostream<char>::__ostream_type&)'
-  112 |         Log::Debug(std::ostringstream() << "port 0: " << listen_endpoint0.port());
-      |                                                                                 ^
-In file included from /DigitalCurling/apps/server/main.cpp:7:
-/DigitalCurling/apps/server/log.hpp:38:17: note: candidate: 'static void digital_curling::server::Log::Debug(std::string_view)'
-   38 |     static void Debug(std::string_view message);
-      |                 ^~~~~
-/DigitalCurling/apps/server/log.hpp:38:40: note:   no known conversion for argument 1 from 'std::basic_ostream<char>::__ostream_type' {aka 'std::basic_ostream<char>'} to 'std::string_view' {aka 'std::basic_string_view<char>'}
-   38 |     static void Debug(std::string_view message);
-      |                       ~~~~~~~~~~~~~~~~~^~~~~~~
-/DigitalCurling/apps/server/log.hpp:40:17: note: candidate: 'static void digital_curling::server::Log::Debug(const ostringstream&)'
-   40 |     static void Debug(std::ostringstream const& message)
-      |                 ^~~~~
-/DigitalCurling/apps/server/log.hpp:40:49: note:   no known conversion for argument 1 from 'std::basic_ostream<char>::__ostream_type' {aka 'std::basic_ostream<char>'} to 'const ostringstream&' {aka 'const std::__cxx11::basic_ostringstream<char>&'}
-   40 |     static void Debug(std::ostringstream const& message)
-      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-/DigitalCurling/apps/server/main.cpp:115:81: error: no matching function for call to 'digital_curling::server::Log::Debug(std::basic_ostream<char>::__ostream_type&)'
-  115 |         Log::Debug(std::ostringstream() << "port 1: " << listen_endpoint1.port());
-      |                                                                                 ^
-In file included from /DigitalCurling/apps/server/main.cpp:7:
-/DigitalCurling/apps/server/log.hpp:38:17: note: candidate: 'static void digital_curling::server::Log::Debug(std::string_view)'
-   38 |     static void Debug(std::string_view message);
-      |                 ^~~~~
-/DigitalCurling/apps/server/log.hpp:38:40: note:   no known conversion for argument 1 from 'std::basic_ostream<char>::__ostream_type' {aka 'std::basic_ostream<char>'} to 'std::string_view' {aka 'std::basic_string_view<char>'}
-   38 |     static void Debug(std::string_view message);
-      |                       ~~~~~~~~~~~~~~~~~^~~~~~~
-/DigitalCurling/apps/server/log.hpp:40:17: note: candidate: 'static void digital_curling::server::Log::Debug(const ostringstream&)'
-   40 |     static void Debug(std::ostringstream const& message)
-      |                 ^~~~~
-/DigitalCurling/apps/server/log.hpp:40:49: note:   no known conversion for argument 1 from 'std::basic_ostream<char>::__ostream_type' {aka 'std::basic_ostream<char>'} to 'const ostringstream&' {aka 'const std::__cxx11::basic_ostringstream<char>&'}
-   40 |     static void Debug(std::ostringstream const& message)
-      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+/DigitalCurling/apps/server/main.cpp:78:89: error: 'class std::basic_ostream<char>' has no member named 'str'
+   78 |         Log::Debug((Buf() << "log file path: " << std::filesystem::absolute(file_name)).str());
+      |                                                                                         ^~~
+/DigitalCurling/apps/server/main.cpp:79:69: error: 'class std::basic_ostream<char>' has no member named 'str'
+   79 |         Log::Debug((Buf() << "game id: " << server_setting.game_id).str());
+      |                                                                     ^~~
+/DigitalCurling/apps/server/main.cpp:113:69: error: 'std::basic_ostream<char>::__ostream_type' {aka 'class std::basic_ostream<char>'} has no member named 'str'
+  113 |         Log::Debug((Buf() << "port 0: " << listen_endpoint0.port()).str());
+      |                                                                     ^~~
+/DigitalCurling/apps/server/main.cpp:116:69: error: 'std::basic_ostream<char>::__ostream_type' {aka 'class std::basic_ostream<char>'} has no member named 'str'
+  116 |         Log::Debug((Buf() << "port 1: " << listen_endpoint1.port()).str());
+      |                                                                     ^~~
 make[2]: *** [apps/server/CMakeFiles/digital_curling__server.dir/build.make:90: apps/server/CMakeFiles/digital_curling__server.dir/main.cpp.o] Error 1
 make[1]: *** [CMakeFiles/Makefile2:352: apps/server/CMakeFiles/digital_curling__server.dir/all] Error 2
 make: *** [Makefile:146: all] Error 2
