@@ -26,21 +26,11 @@ public:
     /// <param name="message">出力されるメッセージ</param>
     static void Trace(std::string_view message);
 
-    static void Trace(std::ostringstream const& message)
-    {
-        Trace(message.str());
-    }
-
     /// <summary>
     /// デバッグ用のログ．主にサーバーの状況を表示する．
     /// </summary>
     /// <param name="message">出力されるメッセージ</param>
     static void Debug(std::string_view message);
-
-    static void Debug(std::ostringstream const& message)
-    {
-        Debug(message.str());
-    }
 
     /// <summary>
     /// GUIによるログ再生ではこのタイプのログを参照する．
@@ -48,32 +38,17 @@ public:
     /// <param name="message">出力されるメッセージ</param>
     static void Info(std::string_view message);
 
-    static void Info(std::ostringstream const& message)
-    {
-        Info(message.str());
-    }
-
     /// <summary>
     /// サーバーを終了する程では無い，異常な動作を検出した場合に使う．
     /// </summary>
     /// <param name="message">出力されるメッセージ</param>
     static void Warn(std::string_view message);
 
-    static void Warn(std::ostringstream const& message)
-    {
-        Warn(message.str());
-    }
-
     /// <summary>
     /// 通信などにエラーが発生した場合用いる．このメッセージを出したらサーバーは速やかに終了する．
     /// </summary>
     /// <param name="message">出力されるメッセージ</param>
     static void Error(std::string_view message);
-
-    static void Error(std::ostringstream const& message)
-    {
-        Error(message.str());
-    }
 
 private:
     std::ofstream file_;
