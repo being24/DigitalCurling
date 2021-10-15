@@ -36,7 +36,6 @@ cd cmake-3.21.3
 make
 make install
 export PATH="/usr/local/bin:$PATH"
-cmake
 
 # リポジトリのclone
 git clone --recursive https://github.com/being24/DigitalCurling.git
