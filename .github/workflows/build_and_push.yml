@@ -1,0 +1,26 @@
+name: Build Docker
+
+on:
+  push:
+    on: [push, pull_request]
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ayame
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker Image
+        uses: docker/build@v1
+        with:
+          dockerfile: Dockerfile
+          context: .
+          tags:
+            - ${{ env.IMAGE_NAME }}
+            - ${{ env.IMAGE_NAME }}:latest
