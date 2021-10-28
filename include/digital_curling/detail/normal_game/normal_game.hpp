@@ -22,12 +22,18 @@ enum class TeamId : std::int8_t {
     /// <summary>
     /// チーム1．最初のエンドで後攻のチーム．
     /// </summary>
-    k1 = 1
+    k1 = 1,
+
+    /// <summary>
+    /// 無効な値
+    /// </summary>
+    kInvalid
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(TeamId, {
     {TeamId::k0, 0},
     {TeamId::k1, 1},
+    {TeamId::kInvalid, nullptr},
 })
 
 
@@ -85,6 +91,13 @@ struct Setting {
     /// ショットの初期角度に加わる乱数(正規分布をとる)の標準偏差．
     /// </summary>
     float stddev_shot_angle = 0.001f;
+
+    /// <summary>
+    /// シミュレーションのステップごとに呼び出されるコールバックです．
+    /// 引数には<see cref="ApplyMove"/>に渡したシミュレータが渡されます．
+    /// このコールバックを使用することで，ストーンが動いている最中の情報を得ることができます．
+    /// </summary>
+    std::function<void(simulation::ISimulator const &)> on_step;
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
@@ -120,9 +133,9 @@ struct GameResult {
     };
 
     /// <summary>
-    /// 勝者．引き分けの場合は<c>std::nulllopt</c>．
+    /// 勝者．引き分けの場合は<see cref="TeamId::kInvalid"/>が格納される．
     /// </summary>
-    std::optional<TeamId> win;
+    TeamId win;
 
     /// <summary>
     /// 勝敗の要因．
@@ -178,7 +191,7 @@ struct State {
     StoneId current_shot;
 
     /// <summary>
-    /// 現在のエンドの先行
+    /// 現在のエンドの先行．ゲーム終了後は<see cref="TeamId::kInvalid"/>が格納される．
     /// </summary>
     TeamId current_end_first;
 
@@ -200,12 +213,12 @@ struct State {
     /// <summary>
     /// チームの現在までの合計スコアを得る
     /// </summary>
-    /// <param name="team">チームID</param>
+    /// <param name="team">チームID．<see cref="TeamId::kInvalid"/>は渡さないでください．</param>
     /// <returns>引数で指定したプレイヤーの合計スコア</returns>
     std::uint32_t GetScore(TeamId team) const;
 
     /// <summary>
-    /// 現在ショットを行うチームを得る
+    /// 現在ショットを行うチームを得る．ゲームがすでに終了している場合<see cref="TeamId::kInvalid"/>を返す．
     /// </summary>
     /// <returns>現在ショットを行うプレイヤー</returns>
     TeamId GetCurrentTeam() const;
@@ -292,14 +305,28 @@ using Move = std::variant<move::Shot, move::Concede, move::TimeLimit>;
 
 
 /// <summary>
-/// 行動の結果
+/// 行動の結果を格納します．
 /// </summary>
 struct MoveResult {
+    /// <summary>
+    /// 行動を行ったチーム．
+    /// </summary>
     TeamId team;
+
+    /// <summary>
+    /// ショット番号
+    /// </summary>
     StoneId shot;
+
+    /// <summary>
+    /// エンド番号
+    /// </summary>
     std::uint8_t end;
+
+    /// <summary>
+    /// 行動後のストーンの位置
+    /// </summary>
     std::array<std::optional<Vector2>, kStoneMax> stone_positions;
-    std::function<void(simulation::ISimulator const &)> on_step;
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
@@ -316,7 +343,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
 /// 行動を適用し，試合を進める．
 /// </summary>
 /// <remarks>
-/// 複数のスレッドで同時に実行する場合は基本的に，すべての引数にスレッド毎に作成したインスタンスを指定するべきです．
+/// 複数のスレッドで同時に実行する場合は，すべての引数にスレッド毎に作成したインスタンスを指定してください．
 /// </remarks>
 /// <param name="setting">試合設定(入力)</param>
 /// <param name="state">試合状態(入力および出力)</param>

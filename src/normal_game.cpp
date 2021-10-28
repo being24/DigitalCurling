@@ -30,6 +30,8 @@ State::State()
 
 std::uint32_t State::GetScore(TeamId team) const
 {
+    assert(team != TeamId::kInvalid);
+
     std::uint32_t score_sum = 0;
 
     for (auto const score : scores) {
@@ -51,6 +53,10 @@ std::uint32_t State::GetScore(TeamId team) const
 
 TeamId State::GetCurrentTeam() const
 {
+    if (game_result) {  // ゲームがすでに終わっている．
+        return TeamId::kInvalid;
+    }
+
     switch (current_end_first) {
         case TeamId::k0:
             if (current_shot % 2 == 0) {
@@ -67,6 +73,10 @@ TeamId State::GetCurrentTeam() const
                 return TeamId::k0;
             }
             break;  // 到達しない
+
+        case TeamId::kInvalid:
+            assert(false);
+            break;
     }
 
     return TeamId::k0;  // 到達しない
@@ -262,6 +272,8 @@ inline bool IsStoneInFreeGuardZone(Vector2 stone_position, float stone_radius, b
 
 inline std::int8_t CheckScore(simulation::AllStoneData const& stones, float stone_radius, bool sheet_side, TeamId current_end_first)
 {
+    assert(current_end_first != TeamId::kInvalid);
+
     // 全ストーンのティーからの位置を計算し，格納．
     std::array<float, kStoneMax> distances{};
     for (StoneId i = 0; i < kStoneMax; ++i) {
@@ -347,6 +359,8 @@ void ApplyMove(
     // ゲームが既に終了している
     if (state.game_result) return;
 
+    assert(state.current_end_first != TeamId::kInvalid);
+
     bool const sheet_side = GetSheetSide(state.current_end);
     float const stone_radius = simulator.GetStoneRadius();
     bool is_shot = std::holds_alternative<move::Shot>(move);
@@ -402,8 +416,8 @@ void ApplyMove(
             if (stone_removed) {
                 simulator.SetStones(stones);
             }
-            if (move_result.on_step) {
-                move_result.on_step(simulator);
+            if (setting.on_step) {
+                setting.on_step(simulator);
             }
         }
 
@@ -482,17 +496,18 @@ void ApplyMove(
             }
             score_sum += state.extra_end_score;
 
+            // 次の手は無い．
+            state.current_end_first = TeamId::kInvalid;
+
+            state.game_result.emplace();
             if (score_sum > 0) {
-                state.game_result.emplace();
                 state.game_result->win = TeamId::k0;
                 state.game_result->reason = GameResult::Reason::kScore;
             } else if (score_sum < 0) {
-                state.game_result.emplace();
                 state.game_result->win = TeamId::k1;
                 state.game_result->reason = GameResult::Reason::kScore;
             } else if (state.current_end >= kExtraEndMax) {  // スコア差無し かつ 延長エンド数限界
-                state.game_result.emplace();
-                state.game_result->win = std::nullopt;
+                state.game_result->win = TeamId::kInvalid;
                 state.game_result->reason = GameResult::Reason::kInvalid;
             }
         }
@@ -504,8 +519,10 @@ void ApplyMove(
 
     // コンシードや時間切れの場合はstateを上書きする．
     if (!is_shot) {
-        state.game_result.emplace();
+        // 次の手は無い．
+        state.current_end_first = TeamId::kInvalid;
 
+        state.game_result.emplace();
         switch (move_result.team) {
             case TeamId::k0:
                 state.game_result->win = TeamId::k1;
@@ -520,11 +537,11 @@ void ApplyMove(
 
         std::visit(
             Overloaded{
-                [&reason = state.game_result->reason](move::Concede) {
-                    reason = GameResult::Reason::kConcede;
+                [&state](move::Concede) {
+                    state.game_result->reason = GameResult::Reason::kConcede;
                 },
-                [&reason = state.game_result->reason](move::TimeLimit) {
-                    reason = GameResult::Reason::kTimeLimit;
+                [&state](move::TimeLimit) {
+                    state.game_result->reason = GameResult::Reason::kTimeLimit;
                 },
                 [](auto const&) {
                     assert(false);
