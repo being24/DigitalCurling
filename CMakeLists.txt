@@ -20,7 +20,7 @@ add_subdirectory(src)
 # apps
 option(DIGITAL_CURLING_BUILD_SERVER "Build digital curling server" ON)
 if(DIGITAL_CURLING_BUILD_SERVER)
-    add_subdirectory(apps/server)
+    add_subdirectory(server)
 endif()
 
 # tests
