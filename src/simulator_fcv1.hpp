@@ -1,19 +1,22 @@
-﻿#ifndef DIGITAL_CURLING_SRC_SIMULATOR_SIMPLE1_HPP
-#define DIGITAL_CURLING_SRC_SIMULATOR_SIMPLE1_HPP
+﻿#ifndef DIGITAL_CURLING_SRC_SIMULATOR_FCV1_HPP
+#define DIGITAL_CURLING_SRC_SIMULATOR_FCV1_HPP
 
 #include "digital_curling/detail/simulation/simulator.hpp"
-#include "digital_curling/detail/simulation/simple1.hpp"
+#include "digital_curling/detail/simulation/fcv1.hpp"
 #include "box2d_util.hpp"
 
 namespace digital_curling::simulation {
 
-class SimulatorSimple1 : public ISimulator {
+/// <summary>
+/// Friction-CurlVelocity式シミュレータ1
+/// </summary>
+class SimulatorFCV1 : public ISimulator {
 public:
 
     static constexpr float kStoneRadius = 0.145f;  // ストーンの半径[m]
     static constexpr float kStoneMass = 19.96f;  // ストーンの質量[kg]
 
-    explicit SimulatorSimple1(SimulatorSettingSimple1 const& setting);
+    explicit SimulatorFCV1(SimulatorFCV1Setting const& setting);
 
     virtual void SetStones(AllStoneData const& stones) override;
     virtual void Step() override;
@@ -30,18 +33,18 @@ public:
 
     virtual ISimulatorSetting const& GetSetting() const override;
 
-    virtual ~SimulatorSimple1() = default;
+    virtual ~SimulatorFCV1() = default;
 
     class ContactListener : public b2ContactListener {
     public:
-        ContactListener(SimulatorSimple1 * instance) : instance_(instance) {}
+        ContactListener(SimulatorFCV1 * instance) : instance_(instance) {}
         virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) override;
     private:
-        SimulatorSimple1 * const instance_;
+        SimulatorFCV1 * const instance_;
     };
 
 private:
-    SimulatorSettingSimple1 const setting_;
+    SimulatorFCV1Setting const setting_;
     b2World world_;
     std::array<b2Body*, kStoneMax> stone_bodies_;
     mutable AllStoneData stones_;
@@ -54,4 +57,4 @@ private:
 
 } // namespace digital_curling::simulation
 
-#endif // DIGITAL_CURLING_SRC_SIMULATOR_SIMPLE1_HPP
+#endif // DIGITAL_CURLING_SRC_SIMULATOR_FCV1_HPP

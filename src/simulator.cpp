@@ -1,7 +1,7 @@
 ﻿#include "digital_curling/detail/simulation/simulator.hpp"
 #include <unordered_map>
 #include <functional>
-#include "simulator_simple1.hpp"
+#include "simulator_fcv1.hpp"
 
 namespace digital_curling::simulation {
 
@@ -32,8 +32,8 @@ std::unique_ptr<digital_curling::simulation::ISimulatorSetting> adl_serializer<s
 {
     auto type = j.at("type").get<std::string>();
 
-    if (type == digital_curling::simulation::SimulatorSettingSimple1::kType) {
-        return CreateSimulatorSettingImpl<digital_curling::simulation::SimulatorSettingSimple1>(j);
+    if (type == digital_curling::simulation::SimulatorFCV1Setting::kType) {
+        return CreateSimulatorSettingImpl<digital_curling::simulation::SimulatorFCV1Setting>(j);
     } else {
         throw std::runtime_error("no such type simulator.");
     }

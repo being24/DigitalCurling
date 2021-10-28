@@ -1,4 +1,4 @@
-﻿#include "simulator_simple1.hpp"
+﻿#include "simulator_fcv1.hpp"
 
 #include <cmath>
 #include <limits>
@@ -6,32 +6,32 @@
 namespace digital_curling::simulation {
 
 //----------------------------------
-// SimulatorSettingSimple1
+// SimulatorFCV1Setting
 
-std::unique_ptr<ISimulator> SimulatorSettingSimple1::CreateSimulator() const
+std::unique_ptr<ISimulator> SimulatorFCV1Setting::CreateSimulator() const
 {
-    return std::make_unique<SimulatorSimple1>(*this);
+    return std::make_unique<SimulatorFCV1>(*this);
 }
 
-void SimulatorSettingSimple1::ToJson(nlohmann::json & j) const
+void SimulatorFCV1Setting::ToJson(nlohmann::json & j) const
 {
     j = *this;
 }
 
-void to_json(nlohmann::json & j, const SimulatorSettingSimple1 & setting)
+void to_json(nlohmann::json & j, const SimulatorFCV1Setting & setting)
 {
-    j["type"] = SimulatorSettingSimple1::kType;
+    j["type"] = SimulatorFCV1Setting::kType;
     j["seconds_per_frame"] = setting.seconds_per_frame;
 }
 
-void from_json(nlohmann::json const& j, SimulatorSettingSimple1 & setting)
+void from_json(nlohmann::json const& j, SimulatorFCV1Setting & setting)
 {
     j.at("seconds_per_frame").get_to(setting.seconds_per_frame);
 }
 
 
 //----------------------------------
-// SimulatorSimple1
+// SimulatorFCV1
 
 
 namespace {
@@ -78,7 +78,7 @@ inline float AngularAcceleration(float linearSpeed)
 
 
 
-SimulatorSimple1::SimulatorSimple1(SimulatorSettingSimple1 const& setting)
+SimulatorFCV1::SimulatorFCV1(SimulatorFCV1Setting const& setting)
     : setting_(setting)
     , world_(b2Vec2_zero)
     , stone_bodies_()
@@ -120,7 +120,7 @@ SimulatorSimple1::SimulatorSimple1(SimulatorSettingSimple1 const& setting)
 
 
 
-void SimulatorSimple1::SetStones(AllStoneData const& stones)
+void SimulatorFCV1::SetStones(AllStoneData const& stones)
 {
     // update bodies
     for (size_t i = 0; i < kStoneMax; ++i) {
@@ -142,7 +142,7 @@ void SimulatorSimple1::SetStones(AllStoneData const& stones)
 
 
 
-void SimulatorSimple1::Step()
+void SimulatorFCV1::Step()
 {
     // simulate
     for (auto stone_body : stone_bodies_) {
@@ -194,7 +194,7 @@ void SimulatorSimple1::Step()
 
 
 
-AllStoneData const& SimulatorSimple1::GetStones() const
+AllStoneData const& SimulatorFCV1::GetStones() const
 {
     if (stones_dirty_) {
         // update stones_
@@ -217,14 +217,14 @@ AllStoneData const& SimulatorSimple1::GetStones() const
 
 
 
-std::vector<StoneCollision> const& SimulatorSimple1::GetCollisions() const
+std::vector<StoneCollision> const& SimulatorFCV1::GetCollisions() const
 {
     return stone_collisions_;
 }
 
 
 
-bool SimulatorSimple1::AreAllStonesStopped() const
+bool SimulatorFCV1::AreAllStonesStopped() const
 {
     if (all_stones_stopped_dirty_) {
         all_stones_stopped_ = true;
@@ -243,21 +243,21 @@ bool SimulatorSimple1::AreAllStonesStopped() const
 
 
 
-float SimulatorSimple1::GetSecondsPerFrame() const
+float SimulatorFCV1::GetSecondsPerFrame() const
 {
     return setting_.seconds_per_frame;
 }
 
 
 
-ISimulatorSetting const& SimulatorSimple1::GetSetting() const
+ISimulatorSetting const& SimulatorFCV1::GetSetting() const
 {
     return setting_;
 }
 
 
 
-void SimulatorSimple1::ContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
+void SimulatorFCV1::ContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 {
     auto a_body = contact->GetFixtureA()->GetBody();
     auto b_body = contact->GetFixtureB()->GetBody();

@@ -8,7 +8,7 @@ set(DIGITAL_CURLING_INCLUDE_FILES
     "../include/digital_curling/detail/common.hpp"
     "../include/digital_curling/detail/normal_game/normal_game.hpp"
     "../include/digital_curling/detail/simulation/simulator.hpp"
-    "../include/digital_curling/detail/simulation/simple1.hpp"
+    "../include/digital_curling/detail/simulation/fcv1.hpp"
     "../include/digital_curling/detail/version.hpp"
     "../include/digital_curling/digital_curling.hpp"
 )
@@ -22,8 +22,8 @@ set(DIGITAL_CURLING_SOURCE_FILES
     "common.cpp"
     "normal_game.cpp"
     "simulator.cpp"
-    "simulator_simple1.hpp"
-    "simulator_simple1.cpp"
+    "simulator_fcv1.hpp"
+    "simulator_fcv1.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/version.cpp"  # generated from version.cpp.in
 )
 

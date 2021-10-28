@@ -103,7 +103,7 @@ int main(int argc, char* const argv[])
         if (j_config.contains("simulator_setting")) {
             simulator_setting = j_config.at("simulator_setting").get<std::unique_ptr<simulation::ISimulatorSetting>>();
         } else {
-            simulator_setting = std::make_unique<simulation::SimulatorSettingSimple1>();
+            simulator_setting = std::make_unique<simulation::SimulatorFCV1Setting>();
         }
 
         boost::asio::io_context io_context;
