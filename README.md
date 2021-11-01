@@ -1,6 +1,8 @@
-# Digital Curling ver.3
+# Digital Curling :curling_stone: version 3
 
-Digital Curling is a system which simulates curling games and a platform for creating curling AI.
+Digital Curling is a curling simulation platform for creating curling AI.
+
+- [Official site](http://minerva.cs.uec.ac.jp/cgi-bin/curling/wiki.cgi)
 
 ## Feature
 
@@ -21,9 +23,8 @@ This repository provides...
 ## Building
 
 1. Clone this repository
-   - :warning: To clone submodules together, use `git clone --recursive <URL>` instead of `git clone <URL>`
+1. To set up submodules, execute `git submodule update --init --recursive`
 1. Install [Boost](https://www.boost.org/)
-1. Set the environment variable `BOOST_ROOT` to the directory in which Boost installed
 1. Install [CMake](https://cmake.org/)
 1. Ensure CMake is in the user `PATH`
 1. Execute the following commands
@@ -35,19 +36,21 @@ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBOX2D_BUILD_TESTBED=OFF ..
 cmake --build . --config RelWithDebInfo
 ```
 
+:warning: If CMake could not find Boost, set the environment variable `BOOST_ROOT` to the directory in which Boost installed.
+
 ### Installation
 
 Currently not supported
 
-## Examples of creating a curling AI
+## Creating a curling AI
 
-Under construction
+See [examples](https://github.com/digitalcurling/DigitalCurling-AI-example).
 
 ## Playing a curling match
 
 - Build the server. See [here](#building).
 - Make a server config file. See [here](#server-config-file).
-- Execute a command such as the following (the command is slightly different for each platform). The first argument is the path to a config file. In this example, the name of the config file is `config.json`.
+- Execute the command below (the command and its location is slightly different for each platform). The first argument is the path to a config file. In the example, the name of the config file is `config.json`.
 
 ```
 ./digital_curling__server config.json
